@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>万能版旅游计划书</title>
+<meta name="description" content="万能版旅游计划书 - 移动端旅游规划应用，支持天气查询、AI行程生成、PWA离线使用">
+<meta name="theme-color" content="#0d9488">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="旅游计划书">
+<link rel="manifest" href="./manifest.json">
+<link rel="icon" type="image/png" sizes="192x192" href="./icons/icon-192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="./icons/icon-512.png">
+<link rel="apple-touch-icon" href="./icons/icon-192.png">
+  <script type="module" crossorigin src="./assets/index-D1nb8sFL.js"></script>
+  <link rel="stylesheet" crossorigin href="./assets/index-DQuSDyem.css">
+</head>
+<body>
+<header class="header">
+  <div class="header-title" id="headerTitle">旅游计划书</div>
+  <div class="header-right">
+    <div class="header-time" id="updateTime">更新于 --</div>
+    <button class="theme-toggle" id="themeToggle" type="button">系统</button>
+    <div class="edit-toggle" id="editToggle" role="switch" aria-checked="false" tabindex="0">
+      <span>编辑</span>
+      <div class="track" id="editTrack"><div class="thumb"></div></div>
+    </div>
+  </div>
+</header>
+
+<main class="container">
+  <section class="card trip-controls glass-card">
+    <div class="card-header" data-target="body-controls">
+      <div class="card-header-left">
+        <div class="card-icon settings">参</div>
+        <span class="card-title">旅行参数</span>
+      </div>
+    </div>
+    <div class="card-body" id="body-controls">
+      <div class="form-grid">
+        <div class="field">
+          <label for="departureCity">出发地</label>
+          <input id="departureCity" value="杭州" autocomplete="off">
+        </div>
+        <div class="field">
+          <label for="destinationInput">目的地</label>
+          <input id="destinationInput" list="destinationList" value="千岛湖" autocomplete="off" placeholder="输入或选择目的地">
+          <datalist id="destinationList"></datalist>
+        </div>
+        <div class="field">
+          <label for="startDate">出发日期</label>
+          <input type="date" id="startDate">
+        </div>
+        <div class="field">
+          <label for="tripDays">天数</label>
+          <select id="tripDays">
+            <option value="1">1天</option>
+            <option value="2" selected>2天1晚</option>
+            <option value="3">3天2晚</option>
+            <option value="4">4天3晚</option>
+            <option value="5">5天4晚</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="transportMode">交通工具</label>
+          <select id="transportMode">
+            <option value="自驾" selected>自驾</option>
+            <option value="高铁">高铁</option>
+            <option value="飞机">飞机</option>
+            <option value="组合公共交通">组合公共交通</option>
+          </select>
+        </div>
+        <div class="field full">
+          <label for="travelers">同行人/偏好</label>
+          <textarea id="travelers">两大人+一岁婴儿，节奏轻松，优先好停车、少排队、可随时休息</textarea>
+        </div>
+      </div>
+      <div class="btn-row">
+        <button class="primary" id="generateBtn" type="button">重新生成</button>
+        <button class="progress-btn" id="cancelGenerateBtn" type="button" hidden>取消生成 00:00</button>
+        <button id="resetBtn" type="button">恢复默认</button>
+        <button id="printBtn" type="button">下载PDF</button>
+      </div>
+      <div class="status-box" id="statusBox"></div>
+    </div>
+  </section>
+
+  <section class="card glass-card" id="card-settings">
+    <div class="card-header" data-target="body-settings">
+      <div class="card-header-left">
+        <div class="card-icon settings">AI</div>
+        <span class="card-title">AI 设置</span>
+      </div>
+    </div>
+    <div class="card-body" id="body-settings">
+      <div class="form-grid">
+        <div class="field">
+          <label for="aiProvider">服务商</label>
+          <select id="aiProvider">
+            <option value="deepseek">DeepSeek</option>
+            <option value="mimo">MiMo-V2.5</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="aiModel">模型</label>
+          <select id="aiModel"></select>
+        </div>
+        <div class="field">
+          <label for="callMode">调用方式</label>
+          <select id="callMode">
+            <option value="proxy" selected>云端代理</option>
+            <option value="direct">API直连</option>
+          </select>
+        </div>
+        <div class="field full proxy-field">
+          <label for="proxyBase">代理域名（Worker 根域名）</label>
+          <input id="proxyBase" placeholder="https://你的worker.workers.dev">
+        </div>
+        <div class="field full proxy-field">
+          <label for="proxyToken">代理访问码</label>
+          <input id="proxyToken" type="password" autocomplete="new-password" placeholder="Worker 中配置的 PROXY_TOKEN">
+        </div>
+        <div class="field full proxy-field">
+          <label><input type="checkbox" id="rememberProxyToken" style="width:auto;min-height:auto;margin-right:6px;">记住代理访问码到本机浏览器</label>
+        </div>
+        <div class="field full api-key-field">
+          <label for="apiKey">API Key</label>
+          <input id="apiKey" type="password" autocomplete="new-password" placeholder="仅 API直连 时使用">
+        </div>
+        <div class="field full direct-field">
+          <label for="apiEndpoint">接口地址</label>
+          <input id="apiEndpoint" value="https://api.deepseek.com/chat/completions" placeholder="仅 API直连 时使用">
+        </div>
+        <div class="field full direct-field">
+          <label><input type="checkbox" id="rememberKey" style="width:auto;min-height:auto;margin-right:6px;">记住 API Key 到本机浏览器</label>
+        </div>
+      </div>
+      <div class="btn-row">
+        <button id="testAiBtn" type="button">测试连接</button>
+        <button id="clearKeyBtn" type="button">清除密钥</button>
+      </div>
+      <div class="status-box" id="aiStatusBox"></div>
+    </div>
+  </section>
+
+  <section class="card glass-card">
+    <div class="card-header" data-target="body-intro">
+      <div class="card-header-left">
+        <div class="card-icon intro">简</div>
+        <span class="card-title">旅游简介</span>
+      </div>
+    </div>
+    <div class="card-body" id="body-intro">
+      <div id="introContent" data-editable="true" data-save-key="intro"></div>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="card-header" data-target="body-weather">
+      <div class="card-header-left">
+        <div class="card-icon weather">天</div>
+        <span class="card-title">天气及交通</span>
+      </div>
+    </div>
+    <div class="card-body" id="body-weather">
+      <div class="section-subtitle">天气预报</div>
+      <div class="forecast-grid" id="forecastGrid">
+        <div class="forecast-card"><div class="forecast-date"><div class="day">--</div><div class="weekday">--</div></div><div class="forecast-icon">--</div><div class="forecast-info"><div class="forecast-desc">等待生成</div><div class="forecast-temp">请选择目的地和日期</div></div></div>
+      </div>
+      <div id="weatherAdvice" class="status-box show"></div>
+      <div class="section-subtitle">交通概览</div>
+      <div id="trafficContent" data-editable="true" data-save-key="traffic"></div>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="card-header" data-target="body-overview">
+      <div class="card-header-left">
+        <div class="card-icon overview">览</div>
+        <span class="card-title">行程总览</span>
+      </div>
+    </div>
+    <div class="card-body" id="body-overview">
+      <div id="overviewContent" data-editable="true" data-save-key="overview"></div>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="card-header" data-target="body-daily">
+      <div class="card-header-left">
+        <div class="card-icon daily">程</div>
+        <span class="card-title">每日行程</span>
+      </div>
+    </div>
+    <div class="card-body" id="body-daily">
+      <div id="dailyContent"></div>
+    </div>
+  </section>
+
+  <section class="card glass-card">
+    <div class="card-header" data-target="body-budget">
+      <div class="card-header-left">
+        <div class="card-icon other">费</div>
+        <span class="card-title">预算参考</span>
+      </div>
+    </div>
+    <div class="card-body" id="body-budget">
+      <div id="budgetContent" data-editable="true" data-save-key="budget"></div>
+    </div>
+  </section>
+
+  <section class="card glass-card">
+    <div class="card-header" data-target="body-tips">
+      <div class="card-header-left">
+        <div class="card-icon tips">提</div>
+        <span class="card-title">温馨提醒</span>
+      </div>
+    </div>
+    <div class="card-body" id="body-tips">
+      <div id="tipsContent" data-editable="true" data-save-key="tips"></div>
+    </div>
+  </section>
+
+  <div class="footer-note">单文件旅游计划书。天气来自 Open-Meteo；AI 计划由你配置的服务商生成；门票、开放时间和路况以出发当天官方信息为准。</div>
+</main>
+
+<div class="sheet-backdrop" id="dayEditorBackdrop" hidden></div>
+<section class="day-editor-sheet" id="dayEditorSheet" role="dialog" aria-modal="true" aria-labelledby="dayEditorTitle" hidden>
+  <div class="sheet-handle"></div>
+  <div class="sheet-header">
+    <div>
+      <div class="sheet-kicker" id="dayEditorKicker">D1</div>
+      <h2 id="dayEditorTitle">编辑本日</h2>
+    </div>
+    <button class="icon-btn" id="dayEditorClose" type="button" aria-label="关闭">×</button>
+  </div>
+  <div class="sheet-body">
+    <div class="form-grid">
+      <div class="field full">
+        <label for="dayEditorDayTitle">标题</label>
+        <input id="dayEditorDayTitle" autocomplete="off">
+      </div>
+      <div class="field full">
+        <label for="dayEditorDate">日期</label>
+        <input type="date" id="dayEditorDate">
+      </div>
+    </div>
+    <div class="sheet-section-title">当天安排</div>
+    <div id="dayEditorItems" class="day-editor-items"></div>
+    <button class="ghost-btn" id="dayEditorAdd" type="button">新增安排</button>
+  </div>
+  <div class="sheet-actions">
+    <button id="dayEditorCancel" type="button">取消</button>
+    <button class="primary" id="dayEditorSave" type="button">保存本日</button>
+  </div>
+</section>
+
+</body>
+</html>
