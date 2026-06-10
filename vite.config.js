@@ -21,10 +21,9 @@ export default defineConfig({
   },
   plugins: [
     VitePWA({
-      registerType: 'autoUpdate',
-      // Immediately take control of pages (skipWaiting + clientsClaim)
+      registerType: 'prompt',
+      // Prompt user before updating; keep clientsClaim so activated SW claims all clients
       workbox: {
-        skipWaiting: true,
         clientsClaim: true,
         // Precache all Vite output: HTML, JS, CSS, icons
         globPatterns: [
@@ -47,7 +46,7 @@ export default defineConfig({
           }
         ],
         // Cache version
-        cacheId: 'travel-planner-v4-3-0'
+        cacheId: 'travel-planner-v4-5-0'
       },
       // PWA manifest
       manifest: {

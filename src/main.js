@@ -7,15 +7,13 @@ import './style.css';
 import { init } from './app.js';
 
 // ---- PWA Service Worker via vite-plugin-pwa ----
-// registerType: 'autoUpdate' with skipWaiting + clientsClaim
-// means new SW takes over immediately without page refresh
+// registerType: 'prompt' — user clicks to update, no forced refresh
 import { registerSW } from 'virtual:pwa-register';
 
 const updateSW = registerSW({
   onNeedRefresh() {
-    // Auto-update: new content available, update immediately
-    updateSW(true);
-    console.log('PWA: New content available, updating...');
+    // New SW waiting — show update prompt at bottom
+    showUpdateBanner();
   },
   onOfflineReady() {
     console.log('PWA: Ready for offline use');
@@ -28,13 +26,48 @@ const updateSW = registerSW({
   }
 });
 
+// ---- Update banner ----
+function showUpdateBanner() {
+  // Remove existing banner if any
+  const existing = document.getElementById('updateBanner');
+  if (existing) existing.remove();
+
+  const banner = document.createElement('div');
+  banner.id = 'updateBanner';
+  banner.className = 'update-banner';
+  banner.setAttribute('role', 'alert');
+  banner.innerHTML = `
+    <span class="update-banner-text">发现新版本可用</span>
+    <button class="update-banner-btn" id="updateBannerBtn">点击更新</button>
+  `;
+
+  // Insert before the tabbar (last child of body)
+  document.body.appendChild(banner);
+
+  // Trigger slide-in animation
+  requestAnimationFrame(() => {
+    banner.classList.add('show');
+  });
+
+  // Click handler
+  banner.querySelector('#updateBannerBtn').addEventListener('click', () => {
+    banner.classList.remove('show');
+    banner.addEventListener('transitionend', () => {
+      banner.remove();
+    }, { once: true });
+
+    // Activate waiting SW and refresh the page
+    updateSW(true);
+  });
+}
+
 // ---- Offline detection ----
 function updateOnlineStatus() {
   const banner = document.getElementById('offlineBanner');
   if (!banner) return;
   if (!navigator.onLine) {
     banner.hidden = false;
-    banner.textContent = '当前离线，仅可查看已缓存的计划内容。';
+    banner.textContent = '当前离线，无法生成新计划，可查看历史计划。';
     banner.className = 'offline-banner show';
   } else {
     banner.hidden = true;
@@ -50,16 +83,14 @@ function createOfflineBanner() {
   banner.hidden = true;
   banner.setAttribute('role', 'status');
   banner.setAttribute('aria-live', 'polite');
-  // Insert as first child of body
   document.body.insertBefore(banner, document.body.firstChild);
 }
 
-// Show a toast-style notification for offline state changes in the app area
+// Show a toast-style notification for offline state
 function showOfflineToast() {
   const main = document.querySelector('main.container');
   if (!main) return;
 
-  // Remove existing toast if any
   const existing = document.getElementById('offlineToast');
   if (existing) existing.remove();
 
@@ -67,14 +98,13 @@ function showOfflineToast() {
     const toast = document.createElement('div');
     toast.id = 'offlineToast';
     toast.className = 'offline-toast';
-    toast.textContent = '📡 当前离线，仅可查看已缓存的计划内容。';
+    toast.textContent = '📡 当前离线，无法生成新计划，可查看历史计划。';
     toast.setAttribute('role', 'alert');
     main.insertBefore(toast, main.firstChild);
   }
 }
 
-// Initialize app when DOM is ready
-// ES modules are deferred, so DOM is already parsed
+// ---- Init ----
 window.addEventListener('DOMContentLoaded', () => {
   createOfflineBanner();
   window.addEventListener('online', () => {
@@ -85,7 +115,6 @@ window.addEventListener('DOMContentLoaded', () => {
     updateOnlineStatus();
     showOfflineToast();
   });
-  // Initial check
   updateOnlineStatus();
   if (!navigator.onLine) showOfflineToast();
 });

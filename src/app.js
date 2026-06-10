@@ -9,6 +9,8 @@
   const PROXY_TOKEN_LOCAL_KEY = STORAGE_PREFIX + 'proxy_token';
   const THEME_KEY = STORAGE_PREFIX + 'theme_mode';
   const LAYOUT_V27_KEY = STORAGE_PREFIX + 'layout_v2_7_initialized';
+  const HISTORY_KEY = 'travel_planner_plan_history';
+  const MAX_HISTORY = 20;
 
   const PROVIDERS = {
     deepseek: {
@@ -168,7 +170,13 @@
     dayEditorKicker: document.getElementById('dayEditorKicker'),
     dayEditorDayTitle: document.getElementById('dayEditorDayTitle'),
     dayEditorDate: document.getElementById('dayEditorDate'),
-    dayEditorItems: document.getElementById('dayEditorItems')
+    dayEditorItems: document.getElementById('dayEditorItems'),
+    hotelName: document.getElementById('hotelName'),
+    checkinDate: document.getElementById('checkinDate'),
+    checkoutDate: document.getElementById('checkoutDate'),
+    departTicketNo: document.getElementById('departTicketNo'),
+    returnTicketNo: document.getElementById('returnTicketNo'),
+    ticketNote: document.getElementById('ticketNote')
   };
 
   let isEditing = false;
@@ -516,8 +524,28 @@
       apiKey: '',
       endpoint: PROVIDERS.deepseek.endpoint,
       model: PROVIDERS.deepseek.model,
-      coordinates: { lat: 29.62, lon: 119.02 }
+      coordinates: { lat: 29.62, lon: 119.02 },
+      hotelInfo: null,
+      ticketInfo: null
     };
+  }
+
+  function getHotelInfo() {
+    const name = els.hotelName.value.trim();
+    const checkin = els.checkinDate.value;
+    const checkout = els.checkoutDate.value;
+    // Only treat as valid hotel info if at least checkin date is filled;
+    // otherwise return null so AI doesn't get confused by empty dates.
+    if (!checkin && !checkout) return null;
+    return { name, checkinDate: checkin, checkoutDate: checkout };
+  }
+
+  function getTicketInfo() {
+    const departNo = els.departTicketNo.value.trim();
+    const returnNo = els.returnTicketNo.value.trim();
+    const note = els.ticketNote.value.trim();
+    if (!departNo && !returnNo && !note) return null;
+    return { departNo, returnNo, note };
   }
 
   function getState() {
@@ -537,7 +565,9 @@
       apiKey: (els.callMode.value || 'proxy') === 'direct' ? els.apiKey.value.trim() : '',
       endpoint: els.apiEndpoint.value.trim() || cfg.endpoint,
       model: els.aiModel.value.trim() || cfg.model,
-      coordinates: null
+      coordinates: null,
+      hotelInfo: getHotelInfo(),
+      ticketInfo: getTicketInfo()
     };
   }
 
@@ -558,6 +588,18 @@
     els.proxyBase.value = normalizeProxyBase(state.proxyBase || '');
     els.proxyToken.value = state.proxyToken || '';
     els.apiEndpoint.value = state.endpoint;
+    if (els.hotelName) {
+      const h = state.hotelInfo || {};
+      els.hotelName.value = h.name || '';
+      els.checkinDate.value = h.checkinDate || '';
+      els.checkoutDate.value = h.checkoutDate || '';
+    }
+    if (els.departTicketNo) {
+      const t = state.ticketInfo || {};
+      els.departTicketNo.value = t.departNo || '';
+      els.returnTicketNo.value = t.returnNo || '';
+      els.ticketNote.value = t.note || '';
+    }
   }
 
   function stateForStorage(state) {
@@ -566,6 +608,83 @@
 
   function saveState(state) {
     localStorage.setItem(STATE_KEY, JSON.stringify(stateForStorage(state)));
+  }
+
+  function buildHistorySummary(plan, state) {
+    // Build a clean summary without intro info
+    const parts = [];
+    if (plan.destination || state.destination) {
+      parts.push(`${state.departureCity || ''} → ${plan.destination || state.destination}`);
+    }
+    if (state.startDate) {
+      parts.push(displayDate(state.startDate));
+    }
+    if (state.days) {
+      parts.push(`${state.days}天`);
+    }
+    if (state.transportMode) {
+      parts.push(state.transportMode);
+    }
+    // Add 1-2 overview items if available
+    if (plan.overview && plan.overview.length) {
+      const first = plan.overview[0];
+      if (first && first.plan) parts.push(first.plan.slice(0, 40));
+    }
+    if (plan.traffic && plan.traffic.distance) {
+      parts.push(plan.traffic.distance);
+    }
+    // Add hotel/ticket hints
+    if (state.hotelInfo && state.hotelInfo.name) {
+      parts.push('酒店: ' + state.hotelInfo.name.slice(0, 20));
+    }
+    if (state.ticketInfo && (state.ticketInfo.departNo || state.ticketInfo.returnNo)) {
+      parts.push('车票已填');
+    }
+    return parts.filter(Boolean).join(' | ') || (plan.title || '旅游计划');
+  }
+
+  function savePlanToHistory(plan, state, weather) {
+    const history = loadPlanHistory();
+    const item = {
+      id: Date.now().toString(36) + Math.random().toString(36).slice(2, 8),
+      title: plan.title || (state.destination + '旅游计划'),
+      destination: state.destination,
+      departureCity: state.departureCity,
+      startDate: state.startDate,
+      tripDays: state.days,
+      transportMode: state.transportMode || '自驾',
+      travelers: state.travelers || '',
+      hotelInfo: state.hotelInfo || null,
+      ticketInfo: state.ticketInfo || null,
+      createdAt: new Date().toISOString(),
+      summary: buildHistorySummary(plan, state),
+      planData: plan
+    };
+    history.unshift(item);
+    if (history.length > MAX_HISTORY) history.length = MAX_HISTORY;
+    try {
+      localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+    } catch {
+      // Storage full, remove oldest and retry
+      history.pop();
+      try { localStorage.setItem(HISTORY_KEY, JSON.stringify(history)); } catch {}
+    }
+  }
+
+  function loadPlanHistory() {
+    try {
+      const raw = localStorage.getItem(HISTORY_KEY);
+      return raw ? JSON.parse(raw) : [];
+    } catch {
+      localStorage.removeItem(HISTORY_KEY);
+      return [];
+    }
+  }
+
+  function deletePlanHistoryItem(id) {
+    const history = loadPlanHistory().filter(item => item.id !== id);
+    localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+    return history;
   }
 
   function sanitizePlanCacheSecrets() {
@@ -720,6 +839,24 @@
       const body = document.getElementById(header.dataset.target);
       if (body) body.hidden = false;
     });
+
+    // Collapse toggle for hotel/ticket cards
+    document.querySelectorAll('.card-collapse-toggle').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const card = btn.closest('.card');
+        const body = card?.querySelector('.card-body');
+        if (!body) return;
+        const collapsed = body.classList.toggle('collapsed-body');
+        btn.classList.toggle('collapsed', collapsed);
+        // Rotate SVG icon, preserve any existing content
+        const svg = btn.querySelector('svg');
+        if (svg) {
+          svg.style.transform = collapsed ? 'rotate(-90deg)' : '';
+          svg.style.transition = 'transform .26s ease';
+        }
+      });
+    });
   }
 
   function createAppCard(iconText, iconClass, title, bodyHtml) {
@@ -864,8 +1001,9 @@
     if (!main || main.dataset.appShell === 'ready') return;
     main.dataset.appShell = 'ready';
     const tripCard = document.querySelector('.trip-controls');
+    const hotelCard = document.getElementById('card-hotel');
+    const ticketCard = document.getElementById('card-ticket');
     const settingsCard = document.getElementById('card-settings');
-    const introCard = document.getElementById('body-intro')?.closest('.card');
     const weatherCard = document.getElementById('body-weather')?.closest('.card');
     const overviewCard = document.getElementById('body-overview')?.closest('.card');
     const budgetCard = document.getElementById('body-budget')?.closest('.card');
@@ -875,6 +1013,7 @@
     const themeCard = createThemeCard();
     const exportCard = createExportCard();
     const dailyCard = document.getElementById('body-daily')?.closest('.card');
+    const historySection = createHistorySection();
 
     const settingsTitle = settingsCard?.querySelector('.card-title');
     if (settingsTitle) settingsTitle.textContent = 'API 设置';
@@ -883,10 +1022,10 @@
 
     const panels = document.createElement('div');
     panels.className = 'app-tab-panels';
+    // Home tab: trip params, hotel, ticket stacked vertically
     panels.appendChild(buildAppSwiper('home', [
-      { label: '旅游参数', card: tripCard },
-      { label: '旅游简介', card: introCard }
-    ].filter(page => page.card)));
+      { label: '旅游参数', cards: [tripCard, hotelCard, ticketCard].filter(Boolean) }
+    ].filter(page => page.cards && page.cards.length)));
     panels.appendChild(buildAppSwiper('trip', [
       { label: '天气', card: weatherCard },
       { label: '交通', card: trafficCard },
@@ -896,9 +1035,10 @@
     panels.appendChild(buildAppSwiper('plan', [
       { label: '行程总览', card: overviewCard }
     ].filter(page => page.card)));
+    // Mine tab: settings, history, theme, export stacked vertically
     panels.appendChild(buildAppSwiper('mine', [
-      { label: 'API 设置', cards: [settingsCard, themeCard, exportCard].filter(Boolean) }
-    ]));
+      { label: '设置', cards: [settingsCard, historySection, themeCard, exportCard].filter(Boolean) }
+    ].filter(page => page.cards && page.cards.length)));
 
     main.innerHTML = '';
     main.classList.add('app-main');
@@ -934,6 +1074,10 @@
     main.addEventListener('click', event => {
       const themeButton = event.target.closest('[data-theme-toggle]');
       if (themeButton) cycleTheme();
+    });
+
+    main.addEventListener('click', event => {
+      handleHistoryAction(event);
     });
 
     expandAppCards();
@@ -2091,7 +2235,6 @@
     if (currentSignature !== nextSignature) activeDayIndex = 0;
     currentSignature = nextSignature;
     els.headerTitle.textContent = '旅游计划书';
-    renderIntro(plan);
     renderTraffic(plan);
     renderOverview(plan, state);
     renderDaily(plan);
@@ -2129,8 +2272,25 @@
       tips: ['提醒'],
       fallbacks: ['备选方案']
     };
+    const hotelLines = state.hotelInfo ? [
+      '\u9152\u5e97\u4fe1\u606f\uff08\u5df2\u786e\u8ba4\uff0c\u8bf7\u6839\u636e\u9152\u5e97\u540d\u79f0\u81ea\u884c\u641c\u7d22\u5730\u5740\u5e76\u6309\u6b64\u5b89\u6392\u4f4f\u5bbf\u548c\u8def\u7ebf\uff09\uff1a',
+      `  \u540d\u79f0\uff1a${state.hotelInfo.name || '\u672a\u586b'}`,
+      `  \u5165\u4f4f\u65e5\u671f\uff1a${state.hotelInfo.checkinDate || '\u672a\u586b'}`,
+      `  \u79bb\u5e97\u65e5\u671f\uff1a${state.hotelInfo.checkoutDate || '\u672a\u586b'}`
+    ].join('\n') : '';
+
+    const ticketLines = state.ticketInfo ? [
+      '\u8f66\u7968/\u4ea4\u901a\u7968\u4fe1\u606f\uff08\u5df2\u786e\u8ba4\uff0c\u8bf7\u6309\u6b64\u5b89\u6392\u51fa\u53d1\u548c\u8fd4\u7a0b\uff09\uff1a',
+      `  \u53bb\u7a0b\u8f66\u6b21/\u822a\u73ed\uff1a${state.ticketInfo.departNo || '\u672a\u586b'}`,
+      `  \u8fd4\u7a0b\u8f66\u6b21/\u822a\u73ed\uff1a${state.ticketInfo.returnNo || '\u672a\u586b'}`,
+      `  \u5907\u6ce8\uff1a${state.ticketInfo.note || '\u65e0'}`
+    ].join('\n') : '';
+
+    const hotelPrompt = hotelLines ? '\n' + hotelLines + '\n\u9152\u5e97\u8981\u6c42\uff1a\u884c\u7a0b\u5929\u6570\u4ee5\u4e0a\u65b9\u201c\u884c\u7a0b\u5929\u6570\u201d\u4e3a\u51c6\uff0c\u4e0d\u8981\u6839\u636e\u9152\u5e97\u65e5\u671f\u7f29\u51cf\u5929\u6570\uff1b\u53c2\u8003\u9152\u5e97\u4f4d\u7f6e\u5b89\u6392\u6bcf\u5929\u8def\u7ebf\uff0c\u4ee5\u9152\u5e97\u4e3a\u4f4f\u5bbf\u4e2d\u5fc3\uff1b\u8003\u8651\u5165\u4f4f\u548c\u79bb\u5e97\u65f6\u95f4\u5b89\u6392\u7b2c\u4e00\u5929\u548c\u6700\u540e\u4e00\u5929\u884c\u7a0b\u3002' : '';
+    const ticketPrompt = ticketLines ? '\n' + ticketLines + '\n\u8f66\u7968\u8981\u6c42\uff1a\u6839\u636e\u53bb\u7a0b\u8f66\u6b21/\u822a\u73ed\u5b89\u6392\u7b2c\u4e00\u5929\u884c\u7a0b\uff0c\u62b5\u8fbe\u540e\u4e0d\u8981\u592a\u8d76\uff1b\u6839\u636e\u8fd4\u7a0b\u8f66\u6b21/\u822a\u73ed\u5b89\u6392\u6700\u540e\u4e00\u5929\u884c\u7a0b\uff0c\u5efa\u8bae\u63d0\u524d2\u5c0f\u65f6\u7ed3\u675f\u884c\u7a0b\u8d76\u8f66/\u8d76\u673a\uff1b\u907f\u514d\u65f6\u95f4\u8fc7\u7d27\u3002' : '';
+
     return [
-      '请只返回严格 JSON，不要 Markdown，不要代码块，不要解释。',
+      '\u8bf7\u53ea\u8fd4\u56de\u4e25\u683c JSON\uff0c\u4e0d\u8981 Markdown\uff0c\u4e0d\u8981\u4ee3\u7801\u5757\uff0c\u4e0d\u8981\u89e3\u91ca\u3002',
       '使用中文，生成一份手机端旅游计划书内容。',
       `出发地：${state.departureCity}`,
       `目的地：${state.destination}（定位参考：${destinationInfo.name || state.destination}，${destinationInfo.region || ''}，坐标 ${coordinatesText}）`,
@@ -2141,6 +2301,8 @@
       `同行人/偏好（最高优先级，必须逐条落实到行程安排、节奏、餐饮、住宿、备选方案中）：${state.travelers || '轻松游'}`,
       `热门景点参考：${(destinationInfo.attractions || []).join('、') || '请按目的地常规热门景点安排'}`,
       `天气摘要：${weatherSummary || '实时天气暂不可用，请给出保守方案'}`,
+      hotelPrompt,
+      ticketPrompt,
       '交通要求：如果交通工具是自驾，计划中要包含停车、服务区/充电加油、错峰和导航确认提醒；如果是高铁，给出往返候选车次/出发到达站/时间/耗时，并说明以12306实时查询为准；如果是飞机，给出往返候选航班或航线/机场/时间窗，并说明以航司或机场实时查询为准；如果是组合公共交通，给出分段换乘方案。所有车次、航班和时间必须尽量使用真实可核验信息，不能确认时必须写“需官方查询确认”，不要编造。',
       '交通和每日行程一致性要求：traffic.options 中的去程出发/到达时间必须能对应 days[0].items 的前两个交通相关安排；返程出发/到达时间必须能对应最后一天 items 的返程相关安排。若无法确认真实班次，请在 traffic.options 和每日行程里都写同一个“需官方查询确认”的时间窗，不要互相矛盾。',
       '行程要求：每天不要过满；严格跟进同行人/偏好里的需求；不要编造精确门票、营业时间、班次；对天气、拥堵、老人孩子、雨天方案给保守提醒；费用用区间或“以官方/导航为准”。',
@@ -2506,6 +2668,8 @@
       try {
         plan = await generateAiPlan(state, destinationInfo, weather, controller.signal);
         cachePlan(plan, state, weather);
+        savePlanToHistory(plan, state, weather);
+        refreshHistoryUI();
         setBox(els.statusBox, `已根据 ${state.destination} 和 ${state.startDate} 更新计划（${formatDateTime()}）。`);
       } catch (aiErr) {
         if (isAbortError(aiErr)) {
@@ -2597,6 +2761,180 @@
     normalizeProxyField(false);
     const state = getState();
     saveState(state);
+  }
+
+  function createHistoryCard(item) {
+    const card = document.createElement('div');
+    card.className = 'history-card';
+    card.dataset.historyId = item.id;
+    const date = item.startDate ? displayDate(item.startDate) : '';
+    card.innerHTML = `
+      <div class="history-card-inner">
+        <div class="history-card-title">${escapeHtml(item.title || item.destination)}</div>
+        <div class="history-card-meta">
+          <span>${escapeHtml(date)}</span>
+          <span>${escapeHtml(item.transportMode || '自驾')}</span>
+        </div>
+      </div>
+      <button class="history-action-btn apply-btn" data-action="apply" data-id="${item.id}">应用</button>
+      <button class="history-action-btn delete-btn" data-action="delete" data-id="${item.id}">删除</button>
+    `;
+    return card;
+  }
+
+  function createHistorySection() {
+    const section = document.createElement('section');
+    section.className = 'card glass-card history-section';
+    section.id = 'historySection';
+    section.innerHTML = `
+      <div class="card-header">
+        <div class="card-header-left">
+          <div class="card-icon history-icon">历</div>
+          <span class="card-title">历史计划</span>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="history-scroll" id="historyScroll"></div>
+        <div class="history-empty" id="historyEmpty" hidden>暂无历史计划，生成一次行程后会自动保存到这里。</div>
+      </div>
+    `;
+    return section;
+  }
+
+  function refreshHistoryUI() {
+    const scroll = document.getElementById('historyScroll');
+    const empty = document.getElementById('historyEmpty');
+    if (!scroll || !empty) return;
+    const history = loadPlanHistory();
+    scroll.innerHTML = '';
+    if (!history.length) {
+      empty.hidden = false;
+      scroll.hidden = true;
+      return;
+    }
+    empty.hidden = true;
+    scroll.hidden = false;
+    history.forEach(item => {
+      scroll.appendChild(createHistoryCard(item));
+    });
+  }
+
+  function handleHistoryAction(event) {
+    const btn = event.target.closest('[data-action]');
+    if (!btn) return;
+    const action = btn.dataset.action;
+    const id = btn.dataset.id;
+    if (action === 'apply') {
+      applyHistoryPlan(id);
+    } else if (action === 'delete') {
+      if (confirm('确认删除该历史计划？')) {
+        deletePlanHistoryItem(id);
+        refreshHistoryUI();
+        initHistorySwipe();
+        setBox(els.statusBox, '已删除历史计划。');
+      }
+    }
+  }
+
+  function initHistorySwipe() {
+    const scroll = document.getElementById('historyScroll');
+    if (!scroll) return;
+
+    let startX = 0;
+    let startY = 0;
+    let currentCard = null;
+    let swiping = false;
+    let lockedAxis = '';
+
+    function resetCard() {
+      if (currentCard) {
+        currentCard.classList.remove('show-apply', 'show-delete');
+        currentCard = null;
+      }
+    }
+
+    scroll.addEventListener('pointerdown', e => {
+      const card = e.target.closest('.history-card');
+      if (!card) { resetCard(); return; }
+      if (currentCard && currentCard !== card) resetCard();
+      startX = e.clientX;
+      startY = e.clientY;
+      currentCard = card;
+      swiping = true;
+      lockedAxis = '';
+      card.classList.add('no-transition');
+    });
+
+    scroll.addEventListener('pointermove', e => {
+      if (!swiping || !currentCard) return;
+      const dx = e.clientX - startX;
+      const dy = e.clientY - startY;
+      if (!lockedAxis && (Math.abs(dx) > 8 || Math.abs(dy) > 8)) {
+        lockedAxis = Math.abs(dx) > Math.abs(dy) ? 'x' : 'y';
+      }
+      if (lockedAxis !== 'x') return;
+      e.preventDefault();
+    });
+
+    scroll.addEventListener('pointerup', e => {
+      if (!swiping || !currentCard) { swiping = false; return; }
+      swiping = false;
+      currentCard.classList.remove('no-transition');
+      if (lockedAxis !== 'x') { resetCard(); return; }
+      const dx = e.clientX - startX;
+      const threshold = 40;
+      if (dx < -threshold) {
+        currentCard.classList.remove('show-delete');
+        currentCard.classList.add('show-apply');
+      } else if (dx > threshold) {
+        currentCard.classList.remove('show-apply');
+        currentCard.classList.add('show-delete');
+      } else {
+        resetCard();
+      }
+    });
+
+    scroll.addEventListener('pointercancel', () => {
+      swiping = false;
+      if (currentCard) currentCard.classList.remove('no-transition');
+    });
+
+    document.addEventListener('pointerdown', e => {
+      if (!currentCard) return;
+      if (!scroll.contains(e.target)) resetCard();
+    });
+  }
+
+  function applyHistoryPlan(id) {
+    const history = loadPlanHistory();
+    const item = history.find(h => h.id === id);
+    if (!item) {
+      setBox(els.statusBox, '未找到该历史计划。', 'error');
+      return;
+    }
+    const state = getState();
+    const restoredState = {
+      ...state,
+      departureCity: item.departureCity || state.departureCity,
+      destination: item.destination || state.destination,
+      startDate: item.startDate || state.startDate,
+      days: item.tripDays || state.days,
+      transportMode: item.transportMode || state.transportMode,
+      travelers: item.travelers || state.travelers,
+      hotelInfo: item.hotelInfo || null,
+      ticketInfo: item.ticketInfo || null
+    };
+    setControls(restoredState);
+    saveState(restoredState);
+    const plan = item.planData;
+    currentPlan = plan;
+    if (plan) {
+      renderPlan(plan, restoredState);
+      setBox(els.statusBox, '已应用该历史计划。');
+    } else {
+      setBox(els.statusBox, '历史计划数据不完整，已恢复参数。');
+    }
+    if (activeAppTab !== 'home') switchTab('home');
   }
 
   export function init() {
@@ -2706,5 +3044,9 @@
       renderPlan(fallback, state);
       setBox(els.statusBox, '当前显示千岛湖兜底模板；填写代理域名和代理访问码后可按目的地和日期生成。');
     }
+
+    // Load history UI
+    refreshHistoryUI();
+    initHistorySwipe();
   }
 // init() called from main.js

@@ -140,15 +140,61 @@
     </div>
   </section>
 
-  <section class="card glass-card">
-    <div class="card-header" data-target="body-intro">
+  <section class="card glass-card" id="card-hotel">
+    <div class="card-header" data-target="body-hotel">
       <div class="card-header-left">
-        <div class="card-icon intro">简</div>
-        <span class="card-title">旅游简介</span>
+        <div class="card-icon hotel">酒</div>
+        <span class="card-title">酒店信息</span>
+        <span class="card-badge-optional">可选</span>
+      </div>
+      <button class="card-collapse-toggle" type="button" aria-label="折叠酒店信息">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6l4 4 4-4"/></svg>
+      </button>
+    </div>
+    <div class="card-body" id="body-hotel">
+      <div class="form-grid">
+        <div class="field">
+          <label for="hotelName">酒店名称</label>
+          <input id="hotelName" autocomplete="off" placeholder="选填">
+        </div>
+        <div class="field">
+          <label for="checkinDate">入住日期</label>
+          <input type="date" id="checkinDate">
+        </div>
+        <div class="field">
+          <label for="checkoutDate">离店日期</label>
+          <input type="date" id="checkoutDate">
+        </div>
       </div>
     </div>
-    <div class="card-body" id="body-intro">
-      <div id="introContent" data-editable="true" data-save-key="intro"></div>
+  </section>
+
+  <section class="card glass-card" id="card-ticket">
+    <div class="card-header" data-target="body-ticket">
+      <div class="card-header-left">
+        <div class="card-icon ticket">票</div>
+        <span class="card-title">车票/交通票信息</span>
+        <span class="card-badge-optional">可选</span>
+      </div>
+      <button class="card-collapse-toggle" type="button" aria-label="折叠车票信息">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6l4 4 4-4"/></svg>
+      </button>
+    </div>
+    <div class="card-body" id="body-ticket">
+      <div class="form-grid">
+        <div class="field full">
+          <label for="departTicketNo">去程车次/航班</label>
+          <input id="departTicketNo" autocomplete="off" placeholder="如 G1、MU5101（选填）">
+        </div>
+        <div class="field full">
+          <label for="returnTicketNo">返程车次/航班</label>
+          <input id="returnTicketNo" autocomplete="off" placeholder="如 G2、MU5102（选填）">
+        </div>
+        <div class="field full">
+          <label for="ticketNote">交通备注</label>
+          <textarea id="ticketNote" rows="2" placeholder="如取票方式、中转信息等（选填）"></textarea>
+        </div>
+      </div>
     </div>
   </section>
 
