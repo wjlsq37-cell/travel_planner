@@ -699,6 +699,199 @@
     }
   }
 
+  // ---- Custom background (IndexedDB) ----
+  const BG_DB_NAME = 'travel_planner_bg';
+  const BG_STORE = 'backgrounds';
+  const BG_KEY = 'custom_bg';
+  const BG_MAX_SIZE = 1_000_000; // 1MB
+
+  function openBgDB() {
+    return new Promise((resolve, reject) => {
+      const req = indexedDB.open(BG_DB_NAME, 1);
+      req.onupgradeneeded = () => { req.result.createObjectStore(BG_STORE); };
+      req.onsuccess = () => resolve(req.result);
+      req.onerror = () => reject(req.error);
+    });
+  }
+
+  async function saveBgToDB(dataUrl, alpha) {
+    const db = await openBgDB();
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction(BG_STORE, 'readwrite');
+      tx.objectStore(BG_STORE).put({ dataUrl, alpha, updatedAt: Date.now() }, BG_KEY);
+      tx.oncomplete = () => resolve();
+      tx.onerror = () => reject(tx.error);
+    });
+  }
+
+  async function loadBgFromDB() {
+    try {
+      const db = await openBgDB();
+      return new Promise((resolve) => {
+        const tx = db.transaction(BG_STORE, 'readonly');
+        const req = tx.objectStore(BG_STORE).get(BG_KEY);
+        req.onsuccess = () => resolve(req.result || null);
+        req.onerror = () => resolve(null);
+      });
+    } catch { return null; }
+  }
+
+  async function clearBgFromDB() {
+    try {
+      const db = await openBgDB();
+      return new Promise((resolve) => {
+        const tx = db.transaction(BG_STORE, 'readwrite');
+        tx.objectStore(BG_STORE).delete(BG_KEY);
+        tx.oncomplete = () => resolve();
+        tx.onerror = () => resolve();
+      });
+    } catch { /* ignore */ }
+  }
+
+  function compressImage(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        const img = new Image();
+        img.onload = () => {
+          const maxW = 1080;
+          let w = img.width;
+          let h = img.height;
+          if (w > maxW) { h = Math.round(h * maxW / w); w = maxW; }
+          const canvas = document.createElement('canvas');
+          canvas.width = w;
+          canvas.height = h;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, w, h);
+          // Try jpeg at quality 0.75, reduce if > 1MB
+          let quality = 0.75;
+          let dataUrl = canvas.toDataURL('image/jpeg', quality);
+          while (dataUrl.length > BG_MAX_SIZE && quality > 0.25) {
+            quality -= 0.1;
+            dataUrl = canvas.toDataURL('image/jpeg', quality);
+          }
+          if (dataUrl.length > BG_MAX_SIZE * 1.5) {
+            reject(new Error('too_large'));
+          } else {
+            resolve(dataUrl);
+          }
+        };
+        img.onerror = () => reject(new Error('load_error'));
+        img.src = reader.result;
+      };
+      reader.onerror = () => reject(new Error('read_error'));
+      reader.readAsDataURL(file);
+    });
+  }
+
+  function applyCustomBackground(dataUrl, alpha) {
+    let layer = document.getElementById('customBgLayer');
+    if (dataUrl) {
+      if (!layer) {
+        layer = document.createElement('div');
+        layer.id = 'customBgLayer';
+        document.body.prepend(layer);
+      }
+      layer.style.backgroundImage = `url(${dataUrl})`;
+      const pct = Math.round((alpha ?? 0.7) * 100);
+      document.body.style.setProperty('--card-alpha', pct + '%');
+    } else {
+      if (layer) layer.remove();
+      document.body.style.removeProperty('--card-alpha');
+    }
+    document.body.classList.toggle('custom-bg', !!dataUrl);
+  }
+
+  async function restoreCustomBackground() {
+    const saved = await loadBgFromDB();
+    if (saved && saved.dataUrl) {
+      applyCustomBackground(saved.dataUrl, saved.alpha ?? 0.7);
+    }
+  }
+
+  function createCustomBgCard() {
+    const card = createAppCard('景', 'theme', '自定义背景', `
+      <div class="bg-upload-preview" id="bgPreview">点击下方按钮上传背景图片</div>
+      <div class="btn-row">
+        <input type="file" id="bgFileInput" accept="image/jpeg,image/png,image/webp" style="display:none">
+        <button class="primary" type="button" id="bgUploadBtn">上传图片</button>
+        <button type="button" id="bgRestoreBtn">恢复默认</button>
+      </div>
+      <div class="bg-toggle-row">
+        <span class="bg-blur-label">卡片透明度</span>
+        <input type="range" id="bgAlphaSlider" min="30" max="100" value="70" step="5">
+        <span id="bgAlphaValue">70%</span>
+      </div>
+    `);
+
+    const preview = card.querySelector('#bgPreview');
+    const fileInput = card.querySelector('#bgFileInput');
+    const uploadBtn = card.querySelector('#bgUploadBtn');
+    const restoreBtn = card.querySelector('#bgRestoreBtn');
+    const alphaSlider = card.querySelector('#bgAlphaSlider');
+    const alphaValue = card.querySelector('#bgAlphaValue');
+
+    uploadBtn.addEventListener('click', () => fileInput.click());
+
+    fileInput.addEventListener('change', async () => {
+      const file = fileInput.files[0];
+      if (!file) return;
+      if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
+        setBox(els.statusBox, '仅支持 JPG、PNG、WebP 格式图片。', 'error');
+        return;
+      }
+      setBox(els.statusBox, '正在压缩图片...');
+      try {
+        const dataUrl = await compressImage(file);
+        const alpha = Number(alphaSlider.value) / 100;
+        await saveBgToDB(dataUrl, alpha);
+        applyCustomBackground(dataUrl, alpha);
+        preview.style.backgroundImage = `url(${dataUrl})`;
+        preview.classList.add('has-bg');
+        preview.textContent = '';
+        setBox(els.statusBox, '背景图片已更新。');
+      } catch (err) {
+        setBox(els.statusBox, '背景图片设置失败，请换一张较小的图片。', 'error');
+      }
+      fileInput.value = '';
+    });
+
+    alphaSlider.addEventListener('input', async () => {
+      const val = Number(alphaSlider.value);
+      alphaValue.textContent = val + '%';
+      document.body.style.setProperty('--card-alpha', val + '%');
+      const saved = await loadBgFromDB();
+      if (saved && saved.dataUrl) {
+        await saveBgToDB(saved.dataUrl, val / 100);
+      }
+    });
+
+    restoreBtn.addEventListener('click', async () => {
+      await clearBgFromDB();
+      applyCustomBackground(null, 0.7);
+      preview.style.backgroundImage = '';
+      preview.classList.remove('has-bg');
+      preview.textContent = '点击下方按钮上传背景图片';
+      alphaSlider.value = 70;
+      alphaValue.textContent = '70%';
+      setBox(els.statusBox, '已恢复默认背景。');
+    });
+
+    // Load current state into preview and slider
+    loadBgFromDB().then(saved => {
+      if (saved && saved.dataUrl) {
+        preview.style.backgroundImage = `url(${saved.dataUrl})`;
+        preview.classList.add('has-bg');
+        preview.textContent = '';
+        const pct = Math.round((saved.alpha ?? 0.7) * 100);
+        alphaSlider.value = pct;
+        alphaValue.textContent = pct + '%';
+      }
+    });
+
+    return card;
+  }
+
   function cachePlan(plan, state, weather) {
     localStorage.setItem(PLAN_CACHE_KEY, JSON.stringify({
       plan,
@@ -778,9 +971,10 @@
   }
 
   function applyTheme(mode) {
-    const theme = mode || localStorage.getItem(THEME_KEY) || 'system';
-    document.documentElement.dataset.theme = theme === 'system' ? '' : theme;
-    const label = theme === 'dark' ? '暗色' : theme === 'light' ? '亮色' : '系统';
+    const theme = mode || localStorage.getItem(THEME_KEY) || 'light';
+    document.documentElement.dataset.theme = theme;
+    const labelMap = { dark: '暗色', light: '亮色', pastel: '柔彩' };
+    const label = labelMap[theme] || '亮色';
     els.themeToggle.textContent = label;
     document.querySelectorAll('[data-theme-toggle]').forEach(button => {
       button.textContent = `切换主题：${label}`;
@@ -789,8 +983,10 @@
   }
 
   function cycleTheme() {
-    const current = localStorage.getItem(THEME_KEY) || 'system';
-    const next = current === 'system' ? 'light' : current === 'light' ? 'dark' : 'system';
+    const current = localStorage.getItem(THEME_KEY) || 'light';
+    const order = ['light', 'dark', 'pastel'];
+    const idx = order.indexOf(current);
+    const next = order[(idx + 1) % order.length];
     applyTheme(next);
   }
 
@@ -974,7 +1170,7 @@
     return createAppCard('题', 'theme', '主题设置', `
       <p>当前主题会保存在本机浏览器，下次打开继续沿用。</p>
       <div class="btn-row">
-        <button class="primary" type="button" data-theme-toggle>系统</button>
+        <button class="primary" type="button" data-theme-toggle>亮色</button>
       </div>
     `);
   }
@@ -1011,6 +1207,7 @@
     const footerNote = main.querySelector('.footer-note');
     const trafficCard = splitTrafficCard(weatherCard);
     const themeCard = createThemeCard();
+    const customBgCard = createCustomBgCard();
     const exportCard = createExportCard();
     const dailyCard = document.getElementById('body-daily')?.closest('.card');
     const historySection = createHistorySection();
@@ -1035,9 +1232,9 @@
     panels.appendChild(buildAppSwiper('plan', [
       { label: '行程总览', card: overviewCard }
     ].filter(page => page.card)));
-    // Mine tab: settings, history, theme, export stacked vertically
+    // Mine tab: settings, history, theme, custom bg, export stacked vertically
     panels.appendChild(buildAppSwiper('mine', [
-      { label: '设置', cards: [settingsCard, historySection, themeCard, exportCard].filter(Boolean) }
+      { label: '设置', cards: [settingsCard, historySection, themeCard, customBgCard, exportCard].filter(Boolean) }
     ].filter(page => page.cards && page.cards.length)));
 
     main.innerHTML = '';
@@ -2938,13 +3135,14 @@
   }
 
   export function init() {
-    applyTheme(localStorage.getItem(THEME_KEY) || 'system');
+    applyTheme(localStorage.getItem(THEME_KEY) || 'light');
     updateTime();
     fillDestinations();
     fillModelOptions('deepseek');
     setupCards();
     initAppShell();
-    applyTheme(localStorage.getItem(THEME_KEY) || 'system');
+    applyTheme(localStorage.getItem(THEME_KEY) || 'light');
+    restoreCustomBackground();
     sanitizePlanCacheSecrets();
 
     const state = loadState();

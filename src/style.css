@@ -185,6 +185,56 @@
   --timeline-line: var(--color-base-300);
 }
 
+:root[data-theme="pastel"] {
+  color-scheme: light;
+  --color-base-100: oklch(98% 0.001 106.423);
+  --color-base-200: oklch(97% 0.001 106.424);
+  --color-base-300: oklch(92% 0.003 48.717);
+  --color-base-content: oklch(21% 0.006 56.043);
+  --color-primary: oklch(71% 0.194 13.428);
+  --color-primary-content: oklch(27% 0.105 12.094);
+  --color-secondary: oklch(82% 0.189 84.429);
+  --color-secondary-content: oklch(27% 0.077 45.635);
+  --color-accent: oklch(84% 0.238 128.85);
+  --color-accent-content: oklch(27% 0.072 132.109);
+  --color-neutral: oklch(26% 0.007 34.298);
+  --color-neutral-content: oklch(98% 0.001 106.423);
+  --color-info: oklch(58% 0.158 241.966);
+  --color-info-content: oklch(97% 0.013 236.62);
+  --color-success: oklch(62% 0.194 149.214);
+  --color-success-content: oklch(98% 0.018 155.826);
+  --color-warning: oklch(64% 0.222 41.116);
+  --color-warning-content: oklch(98% 0.016 73.684);
+  --color-error: oklch(58% 0.253 17.585);
+  --color-error-content: oklch(96% 0.015 12.422);
+  --radius-selector: 0.5rem;
+  --radius-field: 0.5rem;
+  --radius-box: 2rem;
+  --size-selector: 0.25rem;
+  --size-field: 0.25rem;
+  --bg: var(--color-base-100);
+  --surface: var(--color-base-100);
+  --surface-hover: var(--color-base-200);
+  --text: var(--color-base-content);
+  --text-secondary: var(--color-neutral);
+  --border: var(--color-base-300);
+  --accent: var(--color-primary);
+  --accent-light: color-mix(in srgb, var(--color-primary) 18%, var(--surface));
+  --accent-text: var(--color-primary-content);
+  --secondary: var(--color-secondary);
+  --info: var(--color-info);
+  --success: var(--color-success);
+  --warning: var(--color-warning);
+  --danger: var(--color-error);
+  --warning-bg: color-mix(in srgb, var(--color-warning) 18%, var(--surface));
+  --shadow: 0 12px 30px rgba(35, 46, 64, .08), 0 1px 0 rgba(255,255,255,.72);
+  --tag-bg: var(--color-base-200);
+  --tag-text: var(--color-neutral);
+  --timeline-dot: var(--color-primary);
+  --timeline-line: var(--color-base-300);
+  --radius: var(--radius-box);
+}
+
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 html {
@@ -564,7 +614,8 @@ body.app-ready .header {
   box-shadow: var(--shadow), inset 0 1px 0 rgba(255,255,255,.12);
 }
 
-:root[data-theme="light"] .card {
+:root[data-theme="light"] .card,
+:root[data-theme="pastel"] .card {
   background-color: color-mix(in srgb, var(--surface) 88%, transparent);
   background-image:
     radial-gradient(120% 84% at 8% -12%, rgba(255,255,255,.70), transparent 44%),
@@ -661,6 +712,17 @@ body.app-ready .header {
 .glass-card button#printBtn:active {
   background: linear-gradient(135deg, #0f766e, #0d9488 52%, #14b8a6) !important;
   background-image: linear-gradient(135deg, #0f766e, #0d9488 52%, #14b8a6) !important;
+}
+/* Pastel theme PDF button — use primary coral */
+:root[data-theme="pastel"] .glass-card button#printBtn {
+  background: #dc5c4b !important;
+  background-image: none !important;
+  box-shadow: 0 4px 12px rgba(220, 92, 75, .32) !important;
+}
+:root[data-theme="pastel"] .glass-card button#printBtn:hover,
+:root[data-theme="pastel"] .glass-card button#printBtn:active {
+  background: #c44d3d !important;
+  background-image: none !important;
 }
 .card-icon.hotel { background: linear-gradient(135deg, #f59e0b, #eab308 52%, #facc15); color: #3f3a06; text-shadow: none; }
 .card-icon.ticket { background: linear-gradient(135deg, #06b6d4, #38bdf8 52%, #60a5fa); }
@@ -880,7 +942,8 @@ body.app-ready .header {
   }
 }
 
-:root[data-theme="light"] .glass-card {
+:root[data-theme="light"] .glass-card,
+:root[data-theme="pastel"] .glass-card {
   background-color: color-mix(in srgb, var(--surface) 54%, transparent);
   background-image:
     radial-gradient(115% 82% at 10% -10%, rgba(255,255,255,.68), transparent 42%),
@@ -896,11 +959,13 @@ body.app-ready .header {
     inset 0 -1px 1px rgba(255,255,255,.26);
 }
 
-:root[data-theme="light"] .glass-card::before {
+:root[data-theme="light"] .glass-card::before,
+:root[data-theme="pastel"] .glass-card::before {
   opacity: .84;
 }
 
-:root[data-theme="light"] .glass-card::after {
+:root[data-theme="light"] .glass-card::after,
+:root[data-theme="pastel"] .glass-card::after {
   background:
     linear-gradient(180deg, rgba(255,255,255,.42), transparent 34%),
     linear-gradient(150deg, rgba(255,255,255,.26), transparent 44%, rgba(31,41,55,.06));
@@ -917,7 +982,15 @@ body.app-ready .header {
 :root[data-theme="light"] .glass-card .tip-list li,
 :root[data-theme="light"] .glass-card .table-wrap,
 :root[data-theme="light"] .glass-card .tag,
-:root[data-theme="light"] .glass-card button:not(.primary):not(.progress-btn) {
+:root[data-theme="light"] .glass-card button:not(.primary):not(.progress-btn),
+:root[data-theme="pastel"] .glass-card input,
+:root[data-theme="pastel"] .glass-card select,
+:root[data-theme="pastel"] .glass-card textarea,
+:root[data-theme="pastel"] .glass-card .info-item,
+:root[data-theme="pastel"] .glass-card .tip-list li,
+:root[data-theme="pastel"] .glass-card .table-wrap,
+:root[data-theme="pastel"] .glass-card .tag,
+:root[data-theme="pastel"] .glass-card button:not(.primary):not(.progress-btn) {
   background-color: color-mix(in srgb, var(--surface) 62%, transparent);
   background-image:
     linear-gradient(180deg, rgba(255,255,255,.48), rgba(255,255,255,.18)),
@@ -2563,6 +2636,41 @@ body.sheet-open {
   border-radius: var(--radius-box) 0 0 var(--radius-box) !important;
 }
 
+/* ---- Pastel theme: flat / no gradients ---- */
+:root[data-theme="pastel"] body {
+  background: var(--bg);
+}
+:root[data-theme="pastel"] .card {
+  background-image: none;
+}
+:root[data-theme="pastel"] .glass-card {
+  background-image: none;
+}
+:root[data-theme="pastel"] .glass-card::before,
+:root[data-theme="pastel"] .glass-card::after {
+  background: none;
+  box-shadow: none;
+  opacity: 0;
+}
+:root[data-theme="pastel"] .glass-card input,
+:root[data-theme="pastel"] .glass-card select,
+:root[data-theme="pastel"] .glass-card textarea,
+:root[data-theme="pastel"] .glass-card .info-item,
+:root[data-theme="pastel"] .glass-card .tip-list li,
+:root[data-theme="pastel"] .glass-card .table-wrap,
+:root[data-theme="pastel"] .glass-card .tag,
+:root[data-theme="pastel"] .glass-card button:not(.primary):not(.progress-btn) {
+  background-image: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+:root[data-theme="pastel"] .app-tabbar {
+  background-image: none;
+}
+:root[data-theme="pastel"] .app-tabbar::before {
+  background: none;
+}
+
 .card-badge-optional {
   display: inline-flex;
   align-items: center;
@@ -2573,4 +2681,81 @@ body.sheet-open {
   color: var(--text-secondary);
   font-size: .65rem;
   font-weight: 500;
+}
+
+/* ---- Custom background ---- */
+#customBgLayer {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+/* Card transparency controlled by --card-alpha (e.g. 70%) */
+body.custom-bg .card,
+body.custom-bg .glass-card,
+body.custom-bg .app-created-card {
+  background-color: color-mix(in srgb, var(--surface) var(--card-alpha, 70%), transparent) !important;
+  background-image: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+body.custom-bg .card::before,
+body.custom-bg .card::after,
+body.custom-bg .glass-card::before,
+body.custom-bg .glass-card::after {
+  opacity: 0 !important;
+  background: none !important;
+  box-shadow: none !important;
+}
+/* Keep glass-card form elements readable */
+body.custom-bg .glass-card input,
+body.custom-bg .glass-card select,
+body.custom-bg .glass-card textarea,
+body.custom-bg .glass-card .info-item,
+body.custom-bg .glass-card .tip-list li,
+body.custom-bg .glass-card .table-wrap,
+body.custom-bg .glass-card .tag,
+body.custom-bg .glass-card button:not(.primary):not(.progress-btn) {
+  background-color: color-mix(in srgb, var(--surface) 92%, transparent) !important;
+  background-image: none !important;
+}
+
+/* Custom background card styles */
+.bg-upload-preview {
+  width: 100%;
+  height: 80px;
+  margin: 6px 0 10px;
+  border-radius: var(--radius-box);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  border: 1px dashed var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-secondary);
+  font-size: .72rem;
+  overflow: hidden;
+}
+.bg-upload-preview.has-bg {
+  border-style: solid;
+}
+.bg-toggle-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin: 8px 0;
+  font-size: .82rem;
+  color: var(--text);
+}
+.bg-toggle-row input[type="range"] {
+  width: 100px;
+}
+.bg-blur-label {
+  flex: 1;
 }
