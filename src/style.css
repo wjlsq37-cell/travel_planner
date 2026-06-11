@@ -467,7 +467,7 @@ body {
   width: 100%;
   height: 100%;
   transform: translate3d(0,0,0);
-  transition: transform .34s cubic-bezier(.2,.8,.2,1);
+  transition: transform .42s cubic-bezier(.22,.61,.36,1);
   will-change: transform;
 }
 
@@ -522,6 +522,21 @@ body.app-ready .header {
 .app-swiper .mini-swiper-slide {
   height: 100%;
   padding: 6px;
+}
+
+.app-swiper .mini-swiper-slide .app-page-scroll {
+  transform-origin: center top;
+  transition: opacity .34s ease, transform .42s cubic-bezier(.22,.61,.36,1);
+}
+
+.app-swiper .mini-swiper-slide:not(.active) .app-page-scroll {
+  opacity: .86;
+  transform: scale(.985);
+}
+
+.app-swiper .mini-swiper-slide.active .app-page-scroll {
+  opacity: 1;
+  transform: scale(1);
 }
 
 .app-page-scroll {
@@ -2538,6 +2553,7 @@ body.sheet-open {
 
 @media (prefers-reduced-motion: reduce) {
   .mini-swiper-wrapper,
+  .app-swiper .mini-swiper-slide .app-page-scroll,
   .app-page-scroll > .card,
   .app-page-dot,
   .app-tab-btn,
@@ -2546,6 +2562,11 @@ body.sheet-open {
   .day-editor-sheet {
     transition: none !important;
     animation: none !important;
+  }
+
+  .app-swiper .mini-swiper-slide .app-page-scroll {
+    opacity: 1 !important;
+    transform: none !important;
   }
 
   [data-day-page-index].active .route-map.run .route-line,

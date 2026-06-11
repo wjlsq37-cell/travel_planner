@@ -203,17 +203,25 @@
       this.startX = 0;
       this.startY = 0;
       this.deltaX = 0;
+      this.lastMoveX = 0;
+      this.lastMoveTime = 0;
+      this.velocityX = 0;
       this.dragging = false;
       this.lockedAxis = '';
       this.pointerId = null;
       this.swiped = false;
       this.suppressClick = false;
+      this.isAnimating = false;
+      this.pendingSettledIndex = null;
+      this.settleTimer = null;
       this.reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
       this.onPointerDown = this.onPointerDown.bind(this);
       this.onPointerMove = this.onPointerMove.bind(this);
       this.onPointerUp = this.onPointerUp.bind(this);
       this.onClickCapture = this.onClickCapture.bind(this);
       this.onResize = this.onResize.bind(this);
+      this.onTransitionEnd = this.onTransitionEnd.bind(this);
+      this.onWindowBlur = this.onWindowBlur.bind(this);
       this.bind();
       this.update();
       this.slideTo(this.activeIndex, false);
@@ -230,17 +238,26 @@
       this.el.addEventListener('pointerup', this.onPointerUp);
       this.el.addEventListener('pointercancel', this.onPointerUp);
       this.el.addEventListener('click', this.onClickCapture, true);
+      this.wrapper.addEventListener('transitionend', this.onTransitionEnd);
+      window.addEventListener('pointerup', this.onPointerUp);
+      window.addEventListener('pointercancel', this.onPointerUp);
       window.addEventListener('resize', this.onResize);
+      window.addEventListener('blur', this.onWindowBlur);
     }
 
     destroy() {
       if (!this.el) return;
+      this.clearSettleTimer();
       this.el.removeEventListener('pointerdown', this.onPointerDown);
       this.el.removeEventListener('pointermove', this.onPointerMove);
       this.el.removeEventListener('pointerup', this.onPointerUp);
       this.el.removeEventListener('pointercancel', this.onPointerUp);
       this.el.removeEventListener('click', this.onClickCapture, true);
+      this.wrapper?.removeEventListener('transitionend', this.onTransitionEnd);
+      window.removeEventListener('pointerup', this.onPointerUp);
+      window.removeEventListener('pointercancel', this.onPointerUp);
       window.removeEventListener('resize', this.onResize);
+      window.removeEventListener('blur', this.onWindowBlur);
     }
 
     update() {
@@ -265,9 +282,13 @@
       this.startX = event.clientX;
       this.startY = event.clientY;
       this.deltaX = 0;
+      this.lastMoveX = event.clientX;
+      this.lastMoveTime = performance.now();
+      this.velocityX = 0;
       this.dragging = true;
       this.lockedAxis = '';
       this.swiped = false;
+      this.clearSettleTimer();
       this.wrapper.classList.add('no-transition');
       this.el.classList.add('is-dragging');
     }
@@ -278,10 +299,15 @@
       const dy = event.clientY - this.startY;
       const absX = Math.abs(dx);
       const absY = Math.abs(dy);
+      const now = performance.now();
+      const elapsed = Math.max(16, now - this.lastMoveTime);
+      this.velocityX = (event.clientX - this.lastMoveX) / elapsed;
+      this.lastMoveX = event.clientX;
+      this.lastMoveTime = now;
       if (!this.lockedAxis && (absX > 8 || absY > 8)) {
-        if (absX > 10 && absX > absY * .72) {
+        if (absX >= 8 && absX >= absY * .62) {
           this.lockedAxis = 'x';
-        } else if (absY > 12 && absY > absX * 1.35) {
+        } else if (absY >= 14 && absY >= absX * 1.45) {
           this.lockedAxis = 'y';
         }
         if (this.lockedAxis === 'x') {
@@ -301,11 +327,16 @@
     onPointerUp(event) {
       if (!this.dragging || event.pointerId !== this.pointerId) return;
       this.dragging = false;
-      this.pointerId = null;
       this.wrapper.classList.remove('no-transition');
       this.el.classList.remove('is-dragging', 'is-swiping-x');
       const didSwipe = this.lockedAxis === 'x' && this.swiped;
-      if (this.lockedAxis === 'x' && Math.abs(this.deltaX) > Math.min(80, this.width * .22)) {
+      const swipeDistance = Math.abs(this.deltaX);
+      const swipeThreshold = Math.min(56, this.width * .15);
+      const flicked = swipeDistance > 24 && Math.abs(this.velocityX) > .45;
+      if (this.lockedAxis === 'x') {
+        void this.wrapper.offsetWidth;
+      }
+      if (this.lockedAxis === 'x' && (swipeDistance > swipeThreshold || flicked)) {
         this.slideTo(this.activeIndex + (this.deltaX < 0 ? 1 : -1), true);
       } else {
         this.slideTo(this.activeIndex, true);
@@ -318,6 +349,7 @@
       this.lockedAxis = '';
       this.swiped = false;
       try { this.el.releasePointerCapture(event.pointerId); } catch {}
+      this.pointerId = null;
     }
 
     onClickCapture(event) {
@@ -327,13 +359,27 @@
       this.suppressClick = false;
     }
 
+    onWindowBlur() {
+      if (!this.dragging) return;
+      this.dragging = false;
+      this.pointerId = null;
+      this.wrapper.classList.remove('no-transition');
+      this.el.classList.remove('is-dragging', 'is-swiping-x');
+      void this.wrapper.offsetWidth;
+      this.slideTo(this.activeIndex, true);
+      this.deltaX = 0;
+      this.lockedAxis = '';
+      this.swiped = false;
+    }
+
     applyTranslate(value, animate) {
       if (!this.wrapper) return;
-      this.wrapper.classList.toggle('no-transition', animate === false || this.reducedMotion);
-      this.wrapper.style.transform = `translate3d(${value}px,0,0)`;
-      if (animate !== false && !this.reducedMotion) {
-        requestAnimationFrame(() => this.wrapper.classList.remove('no-transition'));
+      if (animate === false || this.reducedMotion) {
+        this.wrapper.classList.add('no-transition');
+      } else {
+        this.wrapper.classList.remove('no-transition');
       }
+      this.wrapper.style.transform = `translate3d(${value}px,0,0)`;
     }
 
     slideTo(index, animate = true) {
@@ -342,7 +388,48 @@
       this.activeIndex = next;
       this.applyTranslate(-next * this.width, animate);
       this.syncSlides();
+      this.scheduleSettled(next, animate);
       if (changed && typeof this.options.onChange === 'function') this.options.onChange(next, this);
+    }
+
+    clearSettleTimer() {
+      if (this.settleTimer) {
+        clearTimeout(this.settleTimer);
+        this.settleTimer = null;
+      }
+      this.pendingSettledIndex = null;
+      this.isAnimating = false;
+    }
+
+    scheduleSettled(index, animate) {
+      this.clearSettleTimer();
+      if (animate === false || this.reducedMotion) {
+        this.notifySettled(index);
+        return;
+      }
+      this.isAnimating = true;
+      this.pendingSettledIndex = index;
+      this.settleTimer = setTimeout(() => this.flushSettled(), 520);
+    }
+
+    onTransitionEnd(event) {
+      if (event.target !== this.wrapper || event.propertyName !== 'transform') return;
+      this.flushSettled();
+    }
+
+    flushSettled() {
+      if (this.pendingSettledIndex === null) return;
+      const index = this.pendingSettledIndex;
+      if (this.settleTimer) clearTimeout(this.settleTimer);
+      this.settleTimer = null;
+      this.pendingSettledIndex = null;
+      this.isAnimating = false;
+      this.notifySettled(index);
+    }
+
+    notifySettled(index) {
+      this.isAnimating = false;
+      if (typeof this.options.onSettled === 'function') this.options.onSettled(index, this);
     }
 
     syncSlides() {
@@ -1197,6 +1284,9 @@
       initialSlide: safeIndex,
       onChange(index) {
         handleAppSwiperChange(tabId, index);
+      },
+      onSettled(index, swiper) {
+        handleAppSwiperSettled(tabId, index, swiper);
       }
     });
     appSwipers[tabId].slideTo(safeIndex, false);
@@ -1333,6 +1423,14 @@
     syncAppDots(tabId, index);
     if (tabId === 'plan' && index > 0) {
       activeDayIndex = index - 1;
+      const isAnimating = appSwipers.plan?.isAnimating === true;
+      syncDayUi(activeDayIndex, { animate: true, deferRoute: isAnimating });
+    }
+  }
+
+  function handleAppSwiperSettled(tabId, index) {
+    if (tabId === 'plan' && index > 0) {
+      activeDayIndex = index - 1;
       syncDayUi(activeDayIndex, { animate: true });
     }
   }
@@ -1359,6 +1457,9 @@
       appSwipers[tabId] = new MiniSwiper(el, {
         onChange(index) {
           handleAppSwiperChange(tabId, index);
+        },
+        onSettled(index, swiper) {
+          handleAppSwiperSettled(tabId, index, swiper);
         }
       });
     });
@@ -2238,11 +2339,12 @@
       slide.classList.toggle('active', active);
       if (active) {
         const route = slide.querySelector('.route-map');
-        if (route && options.animate !== false) {
+        if (!route || options.deferRoute === true) return;
+        if (options.animate !== false) {
           route.classList.remove('run');
           void route.offsetWidth;
           route.classList.add('run');
-        } else if (route) {
+        } else {
           route.classList.add('run');
         }
       }
@@ -2253,11 +2355,12 @@
     const days = Array.isArray(currentPlan?.days) ? currentPlan.days : [];
     if (!days.length) return;
     const next = Math.min(Math.max(Number(index) || 0, 0), days.length - 1);
+    const shouldAnimate = options.animate !== false;
     activeDayIndex = next;
     if (appSwipers.plan) {
-      appSwipers.plan.slideTo(next + 1, options.animate !== false);
+      appSwipers.plan.slideTo(next + 1, shouldAnimate);
     }
-    syncDayUi(next, options);
+    syncDayUi(next, { ...options, deferRoute: shouldAnimate });
   }
 
   function handleDailyClick(event) {
