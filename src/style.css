@@ -526,16 +526,15 @@ body.app-ready .header {
 
 .app-swiper .mini-swiper-slide .app-page-scroll {
   transform-origin: center top;
-  transition: opacity .34s ease, transform .42s cubic-bezier(.22,.61,.36,1);
+  opacity: 1;
+  transition: transform .42s cubic-bezier(.22,.61,.36,1);
 }
 
 .app-swiper .mini-swiper-slide:not(.active) .app-page-scroll {
-  opacity: .86;
-  transform: scale(.985);
+  transform: scale(.992);
 }
 
 .app-swiper .mini-swiper-slide.active .app-page-scroll {
-  opacity: 1;
   transform: scale(1);
 }
 
