@@ -467,7 +467,7 @@ body {
   width: 100%;
   height: 100%;
   transform: translate3d(0,0,0);
-  transition: transform .42s cubic-bezier(.22,.61,.36,1);
+  transition: transform .52s cubic-bezier(.25,.72,.28,1);
   will-change: transform;
 }
 
@@ -527,7 +527,7 @@ body.app-ready .header {
 .app-swiper .mini-swiper-slide .app-page-scroll {
   transform-origin: center top;
   opacity: 1;
-  transition: transform .42s cubic-bezier(.22,.61,.36,1);
+  transition: transform .52s cubic-bezier(.25,.72,.28,1);
 }
 
 .app-swiper .mini-swiper-slide:not(.active) .app-page-scroll {
@@ -536,6 +536,14 @@ body.app-ready .header {
 
 .app-swiper .mini-swiper-slide.active .app-page-scroll {
   transform: scale(1);
+}
+
+#app-panel-plan .mini-swiper-slide:has(.day-app-card) {
+  contain: layout paint;
+}
+
+#app-panel-plan .mini-swiper-slide:has(.day-app-card) .app-page-scroll {
+  backface-visibility: hidden;
 }
 
 .app-page-scroll {
@@ -1829,6 +1837,8 @@ tbody tr:last-child td { border-bottom: none; }
 
 .route-map {
   position: relative;
+  contain: layout paint;
+  container-type: size;
   height: 112px;
   margin: 4px 0 14px;
   overflow: hidden;
@@ -1842,6 +1852,7 @@ tbody tr:last-child td { border-bottom: none; }
   box-shadow: inset 0 1px 0 rgba(255,255,255,.65), 0 8px 18px rgba(35, 46, 64, .07);
   touch-action: pan-y;
   user-select: none;
+  transform: translateZ(0);
 }
 
 .route-map svg {
@@ -1894,10 +1905,13 @@ tbody tr:last-child td { border-bottom: none; }
   top: 66%;
   width: 14px;
   height: 14px;
+  transform: translate3d(0,0,0) scale(.85);
+  transform-origin: center;
   border-radius: 999px;
   background: var(--secondary);
   box-shadow: 0 0 0 6px color-mix(in srgb, var(--secondary) 16%, transparent);
   pointer-events: none;
+  will-change: transform;
 }
 
 .static-map-caption {
@@ -2213,10 +2227,10 @@ body.sheet-open {
 }
 
 @keyframes routeTravel {
-  0% { left: 8%; top: 66%; transform: scale(.85); }
-  35% { left: 34%; top: 23%; transform: scale(1); }
-  70% { left: 64%; top: 74%; transform: scale(1); }
-  100% { left: 88%; top: 34%; transform: scale(1.05); }
+  0% { transform: translate3d(0,0,0) scale(.85); }
+  35% { transform: translate3d(26cqw,-43cqh,0) scale(1); }
+  70% { transform: translate3d(56cqw,8cqh,0) scale(1); }
+  100% { transform: translate3d(80cqw,-32cqh,0) scale(1.05); }
 }
 
 @keyframes sheetUp {
@@ -2519,6 +2533,13 @@ body.sheet-open {
 
 .card-icon {
   text-shadow: none !important;
+}
+
+@media (max-width: 640px) {
+  #app-panel-plan .mini-swiper-slide:has(.day-app-card) .app-page-scroll {
+    transform: none;
+    transition: none;
+  }
 }
 
 @media (max-width: 420px) {

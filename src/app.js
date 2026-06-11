@@ -388,7 +388,7 @@
       this.activeIndex = next;
       this.applyTranslate(-next * this.width, animate);
       this.syncSlides();
-      this.scheduleSettled(next, animate);
+      this.scheduleSettled(next, animate, changed);
       if (changed && typeof this.options.onChange === 'function') this.options.onChange(next, this);
     }
 
@@ -401,15 +401,16 @@
       this.isAnimating = false;
     }
 
-    scheduleSettled(index, animate) {
+    scheduleSettled(index, animate, notify = true) {
       this.clearSettleTimer();
+      if (!notify) return;
       if (animate === false || this.reducedMotion) {
         this.notifySettled(index);
         return;
       }
       this.isAnimating = true;
       this.pendingSettledIndex = index;
-      this.settleTimer = setTimeout(() => this.flushSettled(), 520);
+      this.settleTimer = setTimeout(() => this.flushSettled(), 650);
     }
 
     onTransitionEnd(event) {
@@ -2336,9 +2337,12 @@
     slides.forEach(slide => {
       const slideIndex = Number(slide.dataset.dayPageIndex ?? -1);
       const active = slideIndex === next;
+      const route = slide.querySelector('.route-map');
+      if (route && (!active || options.deferRoute === true)) {
+        route.classList.remove('run');
+      }
       slide.classList.toggle('active', active);
       if (active) {
-        const route = slide.querySelector('.route-map');
         if (!route || options.deferRoute === true) return;
         if (options.animate !== false) {
           route.classList.remove('run');
