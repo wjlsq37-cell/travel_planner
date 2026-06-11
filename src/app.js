@@ -269,15 +269,23 @@
       this.lockedAxis = '';
       this.swiped = false;
       this.wrapper.classList.add('no-transition');
+      this.el.classList.add('is-dragging');
     }
 
     onPointerMove(event) {
       if (!this.dragging || event.pointerId !== this.pointerId) return;
       const dx = event.clientX - this.startX;
       const dy = event.clientY - this.startY;
-      if (!this.lockedAxis && (Math.abs(dx) > 8 || Math.abs(dy) > 8)) {
-        this.lockedAxis = Math.abs(dx) > Math.abs(dy) * 1.15 ? 'x' : 'y';
+      const absX = Math.abs(dx);
+      const absY = Math.abs(dy);
+      if (!this.lockedAxis && (absX > 8 || absY > 8)) {
+        if (absX > 10 && absX > absY * .72) {
+          this.lockedAxis = 'x';
+        } else if (absY > 12 && absY > absX * 1.35) {
+          this.lockedAxis = 'y';
+        }
         if (this.lockedAxis === 'x') {
+          this.el.classList.add('is-swiping-x');
           try { this.el.setPointerCapture(event.pointerId); } catch {}
         }
       }
@@ -295,6 +303,7 @@
       this.dragging = false;
       this.pointerId = null;
       this.wrapper.classList.remove('no-transition');
+      this.el.classList.remove('is-dragging', 'is-swiping-x');
       const didSwipe = this.lockedAxis === 'x' && this.swiped;
       if (this.lockedAxis === 'x' && Math.abs(this.deltaX) > Math.min(80, this.width * .22)) {
         this.slideTo(this.activeIndex + (this.deltaX < 0 ? 1 : -1), true);
@@ -308,6 +317,7 @@
       this.deltaX = 0;
       this.lockedAxis = '';
       this.swiped = false;
+      try { this.el.releasePointerCapture(event.pointerId); } catch {}
     }
 
     onClickCapture(event) {
@@ -784,6 +794,42 @@
     });
   }
 
+  function clampBgAlpha(alpha) {
+    const value = Number(alpha);
+    if (!Number.isFinite(value)) return 0.7;
+    return Math.min(0.7, Math.max(0, value));
+  }
+
+  function syncCustomBackgroundGlass(alpha, active = document.body.classList.contains('custom-bg')) {
+    const clamped = clampBgAlpha(alpha);
+    const ratio = clamped / 0.7;
+    const isTransparent = active && clamped <= 0;
+
+    document.body.classList.toggle('custom-bg-transparent', isTransparent);
+    if (!active) {
+      document.body.style.removeProperty('--custom-card-blur');
+      document.body.style.removeProperty('--custom-sub-card-blur');
+      return;
+    }
+
+    if (isTransparent) {
+      document.body.style.setProperty('--custom-card-blur', 'none');
+      document.body.style.setProperty('--custom-sub-card-blur', 'none');
+      return;
+    }
+
+    const cardBlur = Math.round(30 * ratio);
+    const subBlur = Math.round(16 * ratio);
+    document.body.style.setProperty(
+      '--custom-card-blur',
+      `blur(${cardBlur}px) saturate(${(1 + 0.72 * ratio).toFixed(2)}) contrast(${(1 + 0.03 * ratio).toFixed(2)})`
+    );
+    document.body.style.setProperty(
+      '--custom-sub-card-blur',
+      `blur(${subBlur}px) saturate(${(1 + 0.42 * ratio).toFixed(2)})`
+    );
+  }
+
   function applyCustomBackground(dataUrl, alpha) {
     let layer = document.getElementById('customBgLayer');
     if (dataUrl) {
@@ -793,13 +839,17 @@
         document.body.prepend(layer);
       }
       layer.style.backgroundImage = `url(${dataUrl})`;
-      const pct = Math.round((alpha ?? 0.7) * 100);
+      const safeAlpha = clampBgAlpha(alpha);
+      const pct = Math.round(safeAlpha * 100);
       document.body.style.setProperty('--card-alpha', pct + '%');
+      document.body.classList.add('custom-bg');
+      syncCustomBackgroundGlass(safeAlpha, true);
     } else {
       if (layer) layer.remove();
       document.body.style.removeProperty('--card-alpha');
+      document.body.classList.remove('custom-bg');
+      syncCustomBackgroundGlass(0, false);
     }
-    document.body.classList.toggle('custom-bg', !!dataUrl);
   }
 
   async function restoreCustomBackground() {
@@ -819,7 +869,7 @@
       </div>
       <div class="bg-toggle-row">
         <span class="bg-blur-label">卡片透明度</span>
-        <input type="range" id="bgAlphaSlider" min="30" max="100" value="70" step="5">
+        <input type="range" id="bgAlphaSlider" min="0" max="70" value="70" step="5">
         <span id="bgAlphaValue">70%</span>
       </div>
     `);
@@ -860,6 +910,7 @@
       const val = Number(alphaSlider.value);
       alphaValue.textContent = val + '%';
       document.body.style.setProperty('--card-alpha', val + '%');
+      syncCustomBackgroundGlass(val / 100);
       const saved = await loadBgFromDB();
       if (saved && saved.dataUrl) {
         await saveBgToDB(saved.dataUrl, val / 100);
@@ -883,9 +934,10 @@
         preview.style.backgroundImage = `url(${saved.dataUrl})`;
         preview.classList.add('has-bg');
         preview.textContent = '';
-        const pct = Math.round((saved.alpha ?? 0.7) * 100);
-        alphaSlider.value = pct;
-        alphaValue.textContent = pct + '%';
+        const pct = Math.round(clampBgAlpha(saved.alpha) * 100);
+        const safePct = Math.min(70, Math.max(0, pct));
+        alphaSlider.value = safePct;
+        alphaValue.textContent = safePct + '%';
       }
     });
 
@@ -1166,15 +1218,6 @@
     return trafficCard;
   }
 
-  function createThemeCard() {
-    return createAppCard('题', 'theme', '主题设置', `
-      <p>当前主题会保存在本机浏览器，下次打开继续沿用。</p>
-      <div class="btn-row">
-        <button class="primary" type="button" data-theme-toggle>亮色</button>
-      </div>
-    `);
-  }
-
   function createExportCard() {
     const card = createAppCard('PDF', 'pdf', '导出 PDF', `
       <p>导出会调用浏览器打印流程，请在系统界面选择保存为 PDF。</p>
@@ -1206,7 +1249,6 @@
     const tipsCard = document.getElementById('body-tips')?.closest('.card');
     const footerNote = main.querySelector('.footer-note');
     const trafficCard = splitTrafficCard(weatherCard);
-    const themeCard = createThemeCard();
     const customBgCard = createCustomBgCard();
     const exportCard = createExportCard();
     const dailyCard = document.getElementById('body-daily')?.closest('.card');
@@ -1215,7 +1257,7 @@
     const settingsTitle = settingsCard?.querySelector('.card-title');
     if (settingsTitle) settingsTitle.textContent = 'API 设置';
     if (footerNote) exportCard.querySelector('.card-body').appendChild(footerNote);
-    appPageRegistry = { overviewCard, dailyCard, settingsCard, themeCard, exportCard };
+    appPageRegistry = { overviewCard, dailyCard, settingsCard, exportCard };
 
     const panels = document.createElement('div');
     panels.className = 'app-tab-panels';
@@ -1232,9 +1274,9 @@
     panels.appendChild(buildAppSwiper('plan', [
       { label: '行程总览', card: overviewCard }
     ].filter(page => page.card)));
-    // Mine tab: settings, history, theme, custom bg, export stacked vertically
+    // Mine tab: settings, history, custom bg, export stacked vertically
     panels.appendChild(buildAppSwiper('mine', [
-      { label: '设置', cards: [settingsCard, historySection, themeCard, customBgCard, exportCard].filter(Boolean) }
+      { label: '设置', cards: [settingsCard, historySection, customBgCard, exportCard].filter(Boolean) }
     ].filter(page => page.cards && page.cards.length)));
 
     main.innerHTML = '';

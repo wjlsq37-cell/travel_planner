@@ -49,6 +49,27 @@
   --tag-text: var(--color-neutral);
   --timeline-dot: var(--color-primary);
   --timeline-line: var(--color-base-300);
+  --theme-primary: var(--color-primary);
+  --card-bg: color-mix(in srgb, var(--surface) 58%, transparent);
+  --card-border: rgba(255,255,255,.62);
+  --card-shadow:
+    0 24px 58px rgba(35,46,64,.15),
+    0 7px 18px rgba(35,46,64,.08),
+    inset 0 1px 1px rgba(255,255,255,.86),
+    inset 0 -1px 1px rgba(255,255,255,.24);
+  --card-blur: blur(30px) saturate(1.72) contrast(1.03);
+  --sub-card-bg: color-mix(in srgb, var(--surface) 76%, transparent);
+  --sub-card-border: rgba(255,255,255,.48);
+  --sub-card-shadow:
+    0 10px 22px rgba(35,46,64,.08),
+    inset 0 1px 0 rgba(255,255,255,.68),
+    inset 0 -1px 0 rgba(255,255,255,.18);
+  --sub-card-blur: blur(16px) saturate(1.42);
+  --weather-day-bg: color-mix(in srgb, var(--theme-primary) 20%, var(--sub-card-bg));
+  --history-apply-bg: color-mix(in srgb, var(--success) 30%, #f8fffb);
+  --history-apply-text: #14532d;
+  --history-delete-bg: color-mix(in srgb, var(--danger) 28%, #fff8f8);
+  --history-delete-text: #7f1d1d;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -94,6 +115,26 @@
     --tag-text: var(--color-base-content);
     --timeline-dot: var(--color-primary);
     --timeline-line: var(--color-base-300);
+    --theme-primary: var(--color-primary);
+    --card-bg: color-mix(in srgb, var(--surface) 52%, transparent);
+    --card-border: rgba(255,255,255,.20);
+    --card-shadow:
+      0 26px 62px rgba(0,0,0,.34),
+      0 8px 20px rgba(0,0,0,.22),
+      inset 0 1px 1px rgba(255,255,255,.22),
+      inset 0 -1px 1px rgba(255,255,255,.08);
+    --card-blur: blur(30px) saturate(1.72) contrast(1.04);
+    --sub-card-bg: color-mix(in srgb, var(--surface) 78%, transparent);
+    --sub-card-border: rgba(255,255,255,.16);
+    --sub-card-shadow:
+      0 10px 22px rgba(0,0,0,.18),
+      inset 0 1px 0 rgba(255,255,255,.16);
+    --sub-card-blur: blur(16px) saturate(1.35);
+    --weather-day-bg: color-mix(in srgb, var(--theme-primary) 24%, var(--sub-card-bg));
+    --history-apply-bg: color-mix(in srgb, var(--success) 28%, #123025);
+    --history-apply-text: #dcfce7;
+    --history-delete-bg: color-mix(in srgb, var(--danger) 30%, #3a1720);
+    --history-delete-text: #fee2e2;
   }
 }
 
@@ -139,6 +180,27 @@
   --tag-text: var(--color-neutral);
   --timeline-dot: var(--color-primary);
   --timeline-line: var(--color-base-300);
+  --theme-primary: var(--color-primary);
+  --card-bg: color-mix(in srgb, var(--surface) 58%, transparent);
+  --card-border: rgba(255,255,255,.62);
+  --card-shadow:
+    0 24px 58px rgba(35,46,64,.15),
+    0 7px 18px rgba(35,46,64,.08),
+    inset 0 1px 1px rgba(255,255,255,.86),
+    inset 0 -1px 1px rgba(255,255,255,.24);
+  --card-blur: blur(30px) saturate(1.72) contrast(1.03);
+  --sub-card-bg: color-mix(in srgb, var(--surface) 76%, transparent);
+  --sub-card-border: rgba(255,255,255,.48);
+  --sub-card-shadow:
+    0 10px 22px rgba(35,46,64,.08),
+    inset 0 1px 0 rgba(255,255,255,.68),
+    inset 0 -1px 0 rgba(255,255,255,.18);
+  --sub-card-blur: blur(16px) saturate(1.42);
+  --weather-day-bg: color-mix(in srgb, var(--theme-primary) 20%, var(--sub-card-bg));
+  --history-apply-bg: color-mix(in srgb, var(--success) 30%, #f8fffb);
+  --history-apply-text: #14532d;
+  --history-delete-bg: color-mix(in srgb, var(--danger) 28%, #fff8f8);
+  --history-delete-text: #7f1d1d;
 }
 
 :root[data-theme="dark"] {
@@ -183,6 +245,26 @@
   --tag-text: var(--color-base-content);
   --timeline-dot: var(--color-primary);
   --timeline-line: var(--color-base-300);
+  --theme-primary: var(--color-primary);
+  --card-bg: color-mix(in srgb, var(--surface) 52%, transparent);
+  --card-border: rgba(255,255,255,.20);
+  --card-shadow:
+    0 26px 62px rgba(0,0,0,.34),
+    0 8px 20px rgba(0,0,0,.22),
+    inset 0 1px 1px rgba(255,255,255,.22),
+    inset 0 -1px 1px rgba(255,255,255,.08);
+  --card-blur: blur(30px) saturate(1.72) contrast(1.04);
+  --sub-card-bg: color-mix(in srgb, var(--surface) 78%, transparent);
+  --sub-card-border: rgba(255,255,255,.16);
+  --sub-card-shadow:
+    0 10px 22px rgba(0,0,0,.18),
+    inset 0 1px 0 rgba(255,255,255,.16);
+  --sub-card-blur: blur(16px) saturate(1.35);
+  --weather-day-bg: color-mix(in srgb, var(--theme-primary) 24%, var(--sub-card-bg));
+  --history-apply-bg: color-mix(in srgb, var(--success) 28%, #123025);
+  --history-apply-text: #dcfce7;
+  --history-delete-bg: color-mix(in srgb, var(--danger) 30%, #3a1720);
+  --history-delete-text: #fee2e2;
 }
 
 :root[data-theme="pastel"] {
@@ -233,6 +315,25 @@
   --timeline-dot: var(--color-primary);
   --timeline-line: var(--color-base-300);
   --radius: var(--radius-box);
+  --theme-primary: var(--color-primary);
+  --card-bg: color-mix(in srgb, var(--surface) 68%, transparent);
+  --card-border: rgba(255,255,255,.56);
+  --card-shadow:
+    0 18px 42px rgba(99,60,74,.11),
+    0 6px 16px rgba(99,60,74,.06),
+    inset 0 1px 0 rgba(255,255,255,.68);
+  --card-blur: blur(22px) saturate(1.2);
+  --sub-card-bg: color-mix(in srgb, #fff6f7 82%, transparent);
+  --sub-card-border: rgba(255,255,255,.58);
+  --sub-card-shadow:
+    0 9px 20px rgba(99,60,74,.07),
+    inset 0 1px 0 rgba(255,255,255,.68);
+  --sub-card-blur: blur(12px) saturate(1.12);
+  --weather-day-bg: color-mix(in srgb, var(--theme-primary) 16%, var(--sub-card-bg));
+  --history-apply-bg: #dff4e6;
+  --history-apply-text: #246044;
+  --history-delete-bg: #f9dedb;
+  --history-delete-text: #84332d;
 }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -349,6 +450,16 @@ body {
   min-width: 0;
   overflow: hidden;
   touch-action: pan-y;
+  overscroll-behavior-x: contain;
+}
+
+.mini-swiper.is-swiping-x {
+  cursor: grabbing;
+  touch-action: none;
+}
+
+.mini-swiper.is-swiping-x .app-page-scroll {
+  overflow-y: hidden;
 }
 
 .mini-swiper-wrapper {
@@ -453,28 +564,34 @@ body.app-ready .header {
 }
 
 .app-page-dots {
+  position: relative;
+  z-index: 4;
   display: flex;
-  gap: 10px;
+  gap: 8px;
   align-items: center;
   justify-content: center;
-  min-height: 24px;
+  flex: 0 0 28px;
+  min-height: 28px;
   padding: 0 4px 8px;
+  pointer-events: auto;
 }
 
 .app-page-dot {
+  flex: 0 0 7px;
   width: 7px;
   min-width: 0;
   height: 7px;
   min-height: 0;
   padding: 0;
-  background: color-mix(in srgb, var(--text-secondary) 36%, transparent);
+  background: color-mix(in srgb, var(--text-secondary) 24%, transparent);
   border: 0;
   border-radius: 999px;
-  opacity: .75;
-  transition: width .24s ease, background .24s ease, opacity .24s ease;
+  opacity: .7;
+  transition: background .18s ease, opacity .18s ease, transform .18s ease;
 }
 
 .app-page-dot.active {
+  flex-basis: 22px;
   width: 22px;
   background: var(--accent);
   opacity: 1;
@@ -553,7 +670,7 @@ body.app-ready .header {
   --card-tint-soft: rgba(59, 130, 246, .08);
   position: relative;
   overflow: hidden;
-  background-color: color-mix(in srgb, var(--surface) 88%, transparent);
+  background-color: var(--card-bg);
   background-image:
     radial-gradient(120% 84% at 8% -12%, rgba(255,255,255,.70), transparent 44%),
     radial-gradient(82% 66% at 92% 4%, var(--card-tint-strong), transparent 58%),
@@ -564,9 +681,11 @@ body.app-ready .header {
   background-position: center;
   background-repeat: no-repeat;
   background-size: 100% 100%;
-  border: 1px solid color-mix(in srgb, var(--border) 58%, transparent);
+  border: 1px solid var(--card-border);
   border-radius: var(--radius);
-  box-shadow: var(--shadow), inset 0 1px 0 rgba(255,255,255,.72);
+  box-shadow: var(--card-shadow);
+  backdrop-filter: var(--card-blur);
+  -webkit-backdrop-filter: var(--card-blur);
   transition: background .3s, box-shadow .3s, transform .2s;
 }
 
@@ -590,41 +709,41 @@ body.app-ready .header {
 
 @media (prefers-color-scheme: dark) {
   .card {
-    background-color: color-mix(in srgb, var(--surface) 78%, transparent);
+    background-color: var(--card-bg);
     background-image:
       radial-gradient(120% 84% at 8% -12%, rgba(255,255,255,.16), transparent 44%),
       radial-gradient(82% 66% at 92% 4%, var(--card-tint-strong), transparent 58%),
       radial-gradient(70% 78% at 6% 100%, var(--card-tint-soft), transparent 62%),
       linear-gradient(112deg, transparent 0 36%, rgba(255,255,255,.07) 47%, transparent 60% 100%),
       linear-gradient(180deg, rgba(32,38,52,.68), rgba(12,16,24,.44));
-    border-color: rgba(255,255,255,.14);
-    box-shadow: var(--shadow), inset 0 1px 0 rgba(255,255,255,.12);
+    border-color: var(--card-border);
+    box-shadow: var(--card-shadow);
   }
 }
 
 :root[data-theme="dark"] .card {
-  background-color: color-mix(in srgb, var(--surface) 78%, transparent);
+  background-color: var(--card-bg);
   background-image:
     radial-gradient(120% 84% at 8% -12%, rgba(255,255,255,.16), transparent 44%),
     radial-gradient(82% 66% at 92% 4%, var(--card-tint-strong), transparent 58%),
     radial-gradient(70% 78% at 6% 100%, var(--card-tint-soft), transparent 62%),
     linear-gradient(112deg, transparent 0 36%, rgba(255,255,255,.07) 47%, transparent 60% 100%),
     linear-gradient(180deg, rgba(32,38,52,.68), rgba(12,16,24,.44));
-  border-color: rgba(255,255,255,.14);
-  box-shadow: var(--shadow), inset 0 1px 0 rgba(255,255,255,.12);
+  border-color: var(--card-border);
+  box-shadow: var(--card-shadow);
 }
 
 :root[data-theme="light"] .card,
 :root[data-theme="pastel"] .card {
-  background-color: color-mix(in srgb, var(--surface) 88%, transparent);
+  background-color: var(--card-bg);
   background-image:
     radial-gradient(120% 84% at 8% -12%, rgba(255,255,255,.70), transparent 44%),
     radial-gradient(82% 66% at 92% 4%, var(--card-tint-strong), transparent 58%),
     radial-gradient(70% 78% at 6% 100%, var(--card-tint-soft), transparent 62%),
     linear-gradient(112deg, transparent 0 36%, rgba(255,255,255,.18) 47%, transparent 60% 100%),
     linear-gradient(180deg, color-mix(in srgb, var(--surface) 92%, white), color-mix(in srgb, var(--surface) 70%, transparent));
-  border-color: color-mix(in srgb, var(--border) 58%, transparent);
-  box-shadow: var(--shadow), inset 0 1px 0 rgba(255,255,255,.72);
+  border-color: var(--card-border);
+  box-shadow: var(--card-shadow);
 }
 
 .card-header {
@@ -756,7 +875,7 @@ body.app-ready .header {
   --glass-tint-strong: rgba(20, 184, 166, .26);
   --glass-tint-soft: rgba(59, 130, 246, .12);
   isolation: isolate;
-  background-color: color-mix(in srgb, var(--surface) 54%, transparent);
+  background-color: var(--card-bg);
   background-image:
     radial-gradient(115% 82% at 10% -10%, rgba(255,255,255,.68), transparent 42%),
     radial-gradient(78% 62% at 90% 0%, var(--glass-tint-strong), transparent 55%),
@@ -767,14 +886,10 @@ body.app-ready .header {
   background-position: center;
   background-repeat: no-repeat;
   background-size: 100% 100%;
-  border-color: rgba(255,255,255,.62);
-  box-shadow:
-    0 24px 58px rgba(35,46,64,.16),
-    0 7px 18px rgba(35,46,64,.08),
-    inset 0 1px 1px rgba(255,255,255,.88),
-    inset 0 -1px 1px rgba(255,255,255,.26);
-  backdrop-filter: blur(30px) saturate(1.82) contrast(1.03);
-  -webkit-backdrop-filter: blur(30px) saturate(1.82) contrast(1.03);
+  border-color: var(--card-border);
+  box-shadow: var(--card-shadow);
+  backdrop-filter: var(--card-blur);
+  -webkit-backdrop-filter: var(--card-blur);
 }
 
 .glass-card::before {
@@ -874,17 +989,14 @@ body.app-ready .header {
 .glass-card .tip-list li,
 .glass-card .table-wrap,
 .glass-card .tag {
-  background-color: color-mix(in srgb, var(--surface) 62%, transparent);
+  background-color: var(--sub-card-bg);
   background-image:
     linear-gradient(180deg, rgba(255,255,255,.48), rgba(255,255,255,.18)),
     radial-gradient(circle at 12% 0%, var(--glass-tint), transparent 34%);
-  border-color: rgba(255,255,255,.48);
-  box-shadow:
-    0 7px 18px rgba(35,46,64,.06),
-    inset 0 1px 0 rgba(255,255,255,.66),
-    inset 0 -1px 0 rgba(255,255,255,.18);
-  backdrop-filter: blur(16px) saturate(1.45);
-  -webkit-backdrop-filter: blur(16px) saturate(1.45);
+  border-color: var(--sub-card-border);
+  box-shadow: var(--sub-card-shadow);
+  backdrop-filter: var(--sub-card-blur);
+  -webkit-backdrop-filter: var(--sub-card-blur);
 }
 
 .glass-card input,
@@ -896,11 +1008,11 @@ body.app-ready .header {
 .glass-card button:not(.primary):not(.progress-btn) {
   background:
     linear-gradient(180deg, rgba(255,255,255,.50), rgba(255,255,255,.20)),
-    color-mix(in srgb, var(--surface) 64%, transparent);
-  border-color: rgba(255,255,255,.48);
-  box-shadow: inset 0 1px 0 rgba(255,255,255,.66), 0 6px 14px rgba(35,46,64,.05);
-  backdrop-filter: blur(14px) saturate(1.35);
-  -webkit-backdrop-filter: blur(14px) saturate(1.35);
+    var(--sub-card-bg);
+  border-color: var(--sub-card-border);
+  box-shadow: var(--sub-card-shadow);
+  backdrop-filter: var(--sub-card-blur);
+  -webkit-backdrop-filter: var(--sub-card-blur);
 }
 
 .glass-card input:focus,
@@ -915,19 +1027,15 @@ body.app-ready .header {
 
 @media (prefers-color-scheme: dark) {
   .glass-card {
-    background-color: color-mix(in srgb, var(--surface) 48%, transparent);
+    background-color: var(--card-bg);
     background-image:
       radial-gradient(115% 82% at 10% -10%, rgba(255,255,255,.18), transparent 42%),
       radial-gradient(78% 62% at 90% 0%, var(--glass-tint-strong), transparent 55%),
       radial-gradient(70% 72% at 8% 100%, var(--glass-tint-soft), transparent 60%),
       linear-gradient(112deg, transparent 0 34%, rgba(255,255,255,.07) 45%, transparent 58% 100%),
       linear-gradient(135deg, rgba(32,38,52,.76), rgba(22,27,38,.58) 46%, rgba(12,16,24,.46));
-    border-color: rgba(255,255,255,.20);
-    box-shadow:
-      0 26px 62px rgba(0,0,0,.36),
-      0 8px 20px rgba(0,0,0,.24),
-      inset 0 1px 1px rgba(255,255,255,.22),
-      inset 0 -1px 1px rgba(255,255,255,.08);
+    border-color: var(--card-border);
+    box-shadow: var(--card-shadow);
   }
 
   .glass-card::before {
@@ -952,32 +1060,26 @@ body.app-ready .header {
   .glass-card .table-wrap,
   .glass-card .tag,
   .glass-card button:not(.primary):not(.progress-btn) {
-    background-color: color-mix(in srgb, var(--surface) 72%, transparent);
+    background-color: var(--sub-card-bg);
     background-image:
       linear-gradient(180deg, rgba(255,255,255,.12), rgba(255,255,255,.04)),
       radial-gradient(circle at 12% 0%, var(--glass-tint), transparent 36%);
-    border-color: rgba(255,255,255,.16);
-    box-shadow:
-      0 8px 18px rgba(0,0,0,.16),
-      inset 0 1px 0 rgba(255,255,255,.16);
+    border-color: var(--sub-card-border);
+    box-shadow: var(--sub-card-shadow);
   }
 }
 
 :root[data-theme="light"] .glass-card,
 :root[data-theme="pastel"] .glass-card {
-  background-color: color-mix(in srgb, var(--surface) 54%, transparent);
+  background-color: var(--card-bg);
   background-image:
     radial-gradient(115% 82% at 10% -10%, rgba(255,255,255,.68), transparent 42%),
     radial-gradient(78% 62% at 90% 0%, var(--glass-tint-strong), transparent 55%),
     radial-gradient(70% 72% at 8% 100%, var(--glass-tint-soft), transparent 60%),
     linear-gradient(112deg, transparent 0 34%, rgba(255,255,255,.22) 45%, transparent 58% 100%),
     linear-gradient(135deg, rgba(255,255,255,.56), rgba(255,255,255,.25) 46%, rgba(255,255,255,.14));
-  border-color: rgba(255,255,255,.62);
-  box-shadow:
-    0 24px 58px rgba(35,46,64,.16),
-    0 7px 18px rgba(35,46,64,.08),
-    inset 0 1px 1px rgba(255,255,255,.88),
-    inset 0 -1px 1px rgba(255,255,255,.26);
+  border-color: var(--card-border);
+  box-shadow: var(--card-shadow);
 }
 
 :root[data-theme="light"] .glass-card::before,
@@ -1012,31 +1114,24 @@ body.app-ready .header {
 :root[data-theme="pastel"] .glass-card .table-wrap,
 :root[data-theme="pastel"] .glass-card .tag,
 :root[data-theme="pastel"] .glass-card button:not(.primary):not(.progress-btn) {
-  background-color: color-mix(in srgb, var(--surface) 62%, transparent);
+  background-color: var(--sub-card-bg);
   background-image:
     linear-gradient(180deg, rgba(255,255,255,.48), rgba(255,255,255,.18)),
     radial-gradient(circle at 12% 0%, var(--glass-tint), transparent 34%);
-  border-color: rgba(255,255,255,.48);
-  box-shadow:
-    0 7px 18px rgba(35,46,64,.06),
-    inset 0 1px 0 rgba(255,255,255,.66),
-    inset 0 -1px 0 rgba(255,255,255,.18);
+  border-color: var(--sub-card-border);
+  box-shadow: var(--sub-card-shadow);
 }
 
 :root[data-theme="dark"] .glass-card {
-  background-color: color-mix(in srgb, var(--surface) 48%, transparent);
+  background-color: var(--card-bg);
   background-image:
     radial-gradient(115% 82% at 10% -10%, rgba(255,255,255,.18), transparent 42%),
     radial-gradient(78% 62% at 90% 0%, var(--glass-tint-strong), transparent 55%),
     radial-gradient(70% 72% at 8% 100%, var(--glass-tint-soft), transparent 60%),
     linear-gradient(112deg, transparent 0 34%, rgba(255,255,255,.07) 45%, transparent 58% 100%),
     linear-gradient(135deg, rgba(32,38,52,.76), rgba(22,27,38,.58) 46%, rgba(12,16,24,.46));
-  border-color: rgba(255,255,255,.20);
-  box-shadow:
-    0 26px 62px rgba(0,0,0,.36),
-    0 8px 20px rgba(0,0,0,.24),
-    inset 0 1px 1px rgba(255,255,255,.22),
-    inset 0 -1px 1px rgba(255,255,255,.08);
+  border-color: var(--card-border);
+  box-shadow: var(--card-shadow);
 }
 
 :root[data-theme="dark"] .glass-card::before {
@@ -1061,20 +1156,18 @@ body.app-ready .header {
 :root[data-theme="dark"] .glass-card .table-wrap,
 :root[data-theme="dark"] .glass-card .tag,
 :root[data-theme="dark"] .glass-card button:not(.primary):not(.progress-btn) {
-  background-color: color-mix(in srgb, var(--surface) 72%, transparent);
+  background-color: var(--sub-card-bg);
   background-image:
     linear-gradient(180deg, rgba(255,255,255,.12), rgba(255,255,255,.04)),
     radial-gradient(circle at 12% 0%, var(--glass-tint), transparent 36%);
-  border-color: rgba(255,255,255,.16);
-  box-shadow:
-    0 8px 18px rgba(0,0,0,.16),
-    inset 0 1px 0 rgba(255,255,255,.16);
+  border-color: var(--sub-card-border);
+  box-shadow: var(--sub-card-shadow);
 }
 
 @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
   .glass-card {
-    background-color: color-mix(in srgb, var(--surface) 94%, white);
-    border-color: color-mix(in srgb, var(--border) 72%, transparent);
+    background-color: var(--card-bg);
+    border-color: var(--card-border);
   }
 
   .glass-card input,
@@ -1088,14 +1181,14 @@ body.app-ready .header {
   .day-card,
   .day-event,
   .traffic-sync-card {
-    background-color: var(--surface);
+    background-color: var(--sub-card-bg);
   }
 }
 
 @media (prefers-contrast: more), (prefers-reduced-transparency: reduce) {
   .glass-card {
-    background-color: color-mix(in srgb, var(--surface) 92%, white);
-    border-color: color-mix(in srgb, var(--border) 86%, var(--text));
+    background-color: var(--card-bg);
+    border-color: var(--card-border);
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
   }
@@ -1116,7 +1209,7 @@ body.app-ready .header {
   .day-card,
   .day-event,
   .traffic-sync-card {
-    background-color: var(--surface);
+    background-color: var(--sub-card-bg);
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
   }
@@ -1326,18 +1419,15 @@ button:disabled {
 
 .traffic-sync-card {
   padding: 12px;
-  background-color: color-mix(in srgb, var(--surface) 62%, transparent);
+  background-color: var(--sub-card-bg);
   background-image:
     linear-gradient(180deg, rgba(255,255,255,.48), rgba(255,255,255,.18)),
     radial-gradient(circle at 12% 0%, var(--glass-tint), transparent 34%);
-  border: 1px solid rgba(255,255,255,.48);
+  border: 1px solid var(--sub-card-border);
   border-radius: var(--radius-box);
-  box-shadow:
-    0 7px 18px rgba(35,46,64,.06),
-    inset 0 1px 0 rgba(255,255,255,.66),
-    inset 0 -1px 0 rgba(255,255,255,.18);
-  backdrop-filter: blur(16px) saturate(1.45);
-  -webkit-backdrop-filter: blur(16px) saturate(1.45);
+  box-shadow: var(--sub-card-shadow);
+  backdrop-filter: var(--sub-card-blur);
+  -webkit-backdrop-filter: var(--sub-card-blur);
 }
 
 .traffic-sync-card .label {
@@ -1654,18 +1744,32 @@ tbody tr:last-child td { border-bottom: none; }
   overflow: hidden;
   min-height: 360px;
   padding: 16px;
-  background-color: color-mix(in srgb, var(--surface) 62%, transparent);
+  background-color: var(--sub-card-bg);
   background-image:
     linear-gradient(180deg, rgba(255,255,255,.48), rgba(255,255,255,.18)),
     radial-gradient(circle at 16% 0%, var(--glass-tint), transparent 34%);
-  border: 0;
+  border: 1px solid var(--sub-card-border);
   border-radius: var(--radius-box);
-  box-shadow:
-    0 7px 18px rgba(35,46,64,.06),
-    inset 0 1px 0 rgba(255,255,255,.66),
-    inset 0 -1px 0 rgba(255,255,255,.18);
-  backdrop-filter: blur(16px) saturate(1.45);
-  -webkit-backdrop-filter: blur(16px) saturate(1.45);
+  box-shadow: var(--sub-card-shadow);
+  backdrop-filter: var(--sub-card-blur);
+  -webkit-backdrop-filter: var(--sub-card-blur);
+}
+
+.day-app-card .card-body {
+  padding: 16px;
+}
+
+.day-app-card .day-card {
+  min-height: 0;
+  padding: 0;
+  overflow: visible;
+  background: transparent;
+  background-image: none;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
 }
 
 .day-card-head {
@@ -1906,7 +2010,7 @@ tbody tr:last-child td { border-bottom: none; }
 }
 
 .day-app-card .card-body {
-  padding: 0;
+  padding: 16px;
 }
 
 .day-event {
@@ -1915,18 +2019,15 @@ tbody tr:last-child td { border-bottom: none; }
   gap: 10px;
   align-items: start;
   padding: 10px;
-  background-color: color-mix(in srgb, var(--surface) 62%, transparent);
+  background-color: var(--sub-card-bg);
   background-image:
     linear-gradient(180deg, rgba(255,255,255,.48), rgba(255,255,255,.18)),
     radial-gradient(circle at 12% 0%, var(--glass-tint), transparent 34%);
-  border: 1px solid rgba(255,255,255,.48);
+  border: 1px solid var(--sub-card-border);
   border-radius: var(--radius-field);
-  box-shadow:
-    0 7px 18px rgba(35,46,64,.06),
-    inset 0 1px 0 rgba(255,255,255,.66),
-    inset 0 -1px 0 rgba(255,255,255,.18);
-  backdrop-filter: blur(16px) saturate(1.45);
-  -webkit-backdrop-filter: blur(16px) saturate(1.45);
+  box-shadow: var(--sub-card-shadow);
+  backdrop-filter: var(--sub-card-blur);
+  -webkit-backdrop-filter: var(--sub-card-blur);
 }
 
 .day-event-time {
@@ -2127,26 +2228,23 @@ body.sheet-open {
   gap: 10px;
   align-items: center;
   padding: 10px;
-  background-color: color-mix(in srgb, var(--surface) 62%, transparent);
+  background-color: var(--sub-card-bg);
   background-image:
     linear-gradient(180deg, rgba(255,255,255,.48), rgba(255,255,255,.18)),
     radial-gradient(circle at 12% 0%, var(--glass-tint), transparent 34%);
-  border: var(--border-size) solid rgba(255,255,255,.48);
+  border: var(--border-size) solid var(--sub-card-border);
   border-radius: var(--radius-box);
-  box-shadow:
-    0 7px 18px rgba(35,46,64,.06),
-    inset 0 1px 0 rgba(255,255,255,.66),
-    inset 0 -1px 0 rgba(255,255,255,.18);
-  backdrop-filter: blur(16px) saturate(1.45);
-  -webkit-backdrop-filter: blur(16px) saturate(1.45);
+  box-shadow: var(--sub-card-shadow);
+  backdrop-filter: var(--sub-card-blur);
+  -webkit-backdrop-filter: var(--sub-card-blur);
 }
 
 .forecast-card.highlight {
-  border-color: var(--accent);
-  background-color: color-mix(in srgb, var(--accent-light) 40%, transparent);
+  border-color: color-mix(in srgb, var(--theme-primary) 42%, var(--sub-card-border));
+  background-color: var(--weather-day-bg);
   background-image:
     linear-gradient(180deg, rgba(255,255,255,.48), rgba(255,255,255,.18)),
-    radial-gradient(circle at 12% 0%, var(--glass-tint), transparent 34%);
+    radial-gradient(circle at 12% 0%, color-mix(in srgb, var(--theme-primary) 24%, transparent), transparent 34%);
 }
 
 .forecast-date .day {
@@ -2200,7 +2298,7 @@ body.sheet-open {
   overflow: hidden;
   margin: 0;
   padding: 14px 16px;
-  background-color: color-mix(in srgb, var(--surface) 66%, transparent);
+  background-color: var(--sub-card-bg);
   background-image:
     radial-gradient(92% 72% at 0% 0%, rgba(255,255,255,.52), transparent 46%),
     radial-gradient(74% 66% at 100% 0%, var(--glass-tint), transparent 58%),
@@ -2209,14 +2307,11 @@ body.sheet-open {
   background-position: center;
   background-repeat: no-repeat;
   background-size: 100% 100%;
-  border: 1px solid rgba(255,255,255,.50);
+  border: 1px solid var(--sub-card-border);
   border-radius: calc(var(--radius-box) + 2px);
-  box-shadow:
-    0 12px 28px rgba(35,46,64,.08),
-    inset 0 1px 0 rgba(255,255,255,.74),
-    inset 0 -1px 0 rgba(255,255,255,.20);
-  backdrop-filter: blur(18px) saturate(1.42);
-  -webkit-backdrop-filter: blur(18px) saturate(1.42);
+  box-shadow: var(--sub-card-shadow);
+  backdrop-filter: var(--sub-card-blur);
+  -webkit-backdrop-filter: var(--sub-card-blur);
 }
 
 #introContent > .tag-group {
@@ -2269,53 +2364,46 @@ body.sheet-open {
   #budgetContent > .table-wrap,
   #tipsContent > .tip-list,
   .forecast-card {
-    background-color: color-mix(in srgb, var(--surface) 72%, transparent);
+    background-color: var(--sub-card-bg);
     background-image:
       radial-gradient(92% 72% at 0% 0%, rgba(255,255,255,.12), transparent 46%),
       radial-gradient(74% 66% at 100% 0%, var(--glass-tint), transparent 58%),
       linear-gradient(112deg, transparent 0 35%, rgba(255,255,255,.07) 48%, transparent 62% 100%),
       linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.03));
-    border-color: rgba(255,255,255,.16);
-    box-shadow:
-      0 12px 28px rgba(0,0,0,.18),
-      inset 0 1px 0 rgba(255,255,255,.18);
+    border-color: var(--sub-card-border);
+    box-shadow: var(--sub-card-shadow);
   }
 
   .forecast-card.highlight {
-    background-color: color-mix(in srgb, var(--accent-light) 24%, transparent);
-    border-color: var(--accent);
+    background-color: var(--weather-day-bg);
+    border-color: color-mix(in srgb, var(--theme-primary) 42%, var(--sub-card-border));
   }
 
   .day-card {
-    background-color: color-mix(in srgb, var(--surface) 72%, transparent);
+    background-color: var(--sub-card-bg);
     background-image:
       linear-gradient(180deg, rgba(255,255,255,.12), rgba(255,255,255,.04)),
       radial-gradient(circle at 16% 0%, var(--glass-tint), transparent 36%);
-    box-shadow:
-      0 8px 18px rgba(0,0,0,.16),
-      inset 0 1px 0 rgba(255,255,255,.16);
+    border-color: var(--sub-card-border);
+    box-shadow: var(--sub-card-shadow);
   }
 
   .day-event {
-    background-color: color-mix(in srgb, var(--surface) 72%, transparent);
+    background-color: var(--sub-card-bg);
     background-image:
       linear-gradient(180deg, rgba(255,255,255,.12), rgba(255,255,255,.04)),
       radial-gradient(circle at 12% 0%, var(--glass-tint), transparent 36%);
-    border-color: rgba(255,255,255,.16);
-    box-shadow:
-      0 8px 18px rgba(0,0,0,.16),
-      inset 0 1px 0 rgba(255,255,255,.16);
+    border-color: var(--sub-card-border);
+    box-shadow: var(--sub-card-shadow);
   }
 
   .traffic-sync-card {
-    background-color: color-mix(in srgb, var(--surface) 72%, transparent);
+    background-color: var(--sub-card-bg);
     background-image:
       linear-gradient(180deg, rgba(255,255,255,.12), rgba(255,255,255,.04)),
       radial-gradient(circle at 12% 0%, var(--glass-tint), transparent 36%);
-    border-color: rgba(255,255,255,.16);
-    box-shadow:
-      0 8px 18px rgba(0,0,0,.16),
-      inset 0 1px 0 rgba(255,255,255,.16);
+    border-color: var(--sub-card-border);
+    box-shadow: var(--sub-card-shadow);
   }
 }
 
@@ -2325,53 +2413,46 @@ body.sheet-open {
 :root[data-theme="dark"] #budgetContent > .table-wrap,
 :root[data-theme="dark"] #tipsContent > .tip-list,
 :root[data-theme="dark"] .forecast-card {
-  background-color: color-mix(in srgb, var(--surface) 72%, transparent);
+  background-color: var(--sub-card-bg);
   background-image:
     radial-gradient(92% 72% at 0% 0%, rgba(255,255,255,.12), transparent 46%),
     radial-gradient(74% 66% at 100% 0%, var(--glass-tint), transparent 58%),
     linear-gradient(112deg, transparent 0 35%, rgba(255,255,255,.07) 48%, transparent 62% 100%),
     linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.03));
-  border-color: rgba(255,255,255,.16);
-  box-shadow:
-    0 12px 28px rgba(0,0,0,.18),
-    inset 0 1px 0 rgba(255,255,255,.18);
+  border-color: var(--sub-card-border);
+  box-shadow: var(--sub-card-shadow);
 }
 
 :root[data-theme="dark"] .forecast-card.highlight {
-  background-color: color-mix(in srgb, var(--accent-light) 24%, transparent);
-  border-color: var(--accent);
+  background-color: var(--weather-day-bg);
+  border-color: color-mix(in srgb, var(--theme-primary) 42%, var(--sub-card-border));
 }
 
 :root[data-theme="dark"] .day-card {
-  background-color: color-mix(in srgb, var(--surface) 72%, transparent);
+  background-color: var(--sub-card-bg);
   background-image:
     linear-gradient(180deg, rgba(255,255,255,.12), rgba(255,255,255,.04)),
     radial-gradient(circle at 16% 0%, var(--glass-tint), transparent 36%);
-  box-shadow:
-    0 8px 18px rgba(0,0,0,.16),
-    inset 0 1px 0 rgba(255,255,255,.16);
+  border-color: var(--sub-card-border);
+  box-shadow: var(--sub-card-shadow);
 }
 
 :root[data-theme="dark"] .day-event {
-  background-color: color-mix(in srgb, var(--surface) 72%, transparent);
+  background-color: var(--sub-card-bg);
   background-image:
     linear-gradient(180deg, rgba(255,255,255,.12), rgba(255,255,255,.04)),
     radial-gradient(circle at 12% 0%, var(--glass-tint), transparent 36%);
-  border-color: rgba(255,255,255,.16);
-  box-shadow:
-    0 8px 18px rgba(0,0,0,.16),
-    inset 0 1px 0 rgba(255,255,255,.16);
+  border-color: var(--sub-card-border);
+  box-shadow: var(--sub-card-shadow);
 }
 
 :root[data-theme="dark"] .traffic-sync-card {
-  background-color: color-mix(in srgb, var(--surface) 72%, transparent);
+  background-color: var(--sub-card-bg);
   background-image:
     linear-gradient(180deg, rgba(255,255,255,.12), rgba(255,255,255,.04)),
     radial-gradient(circle at 12% 0%, var(--glass-tint), transparent 36%);
-  border-color: rgba(255,255,255,.16);
-  box-shadow:
-    0 8px 18px rgba(0,0,0,.16),
-    inset 0 1px 0 rgba(255,255,255,.16);
+  border-color: var(--sub-card-border);
+  box-shadow: var(--sub-card-shadow);
 }
 
 :root[data-theme="light"] #introContent > p,
@@ -2379,17 +2460,14 @@ body.sheet-open {
 :root[data-theme="light"] #budgetContent > p,
 :root[data-theme="light"] #budgetContent > .table-wrap,
 :root[data-theme="light"] #tipsContent > .tip-list {
-  background-color: color-mix(in srgb, var(--surface) 66%, transparent);
+  background-color: var(--sub-card-bg);
   background-image:
     radial-gradient(92% 72% at 0% 0%, rgba(255,255,255,.52), transparent 46%),
     radial-gradient(74% 66% at 100% 0%, var(--glass-tint), transparent 58%),
     linear-gradient(112deg, transparent 0 35%, rgba(255,255,255,.20) 48%, transparent 62% 100%),
     linear-gradient(180deg, rgba(255,255,255,.36), rgba(255,255,255,.12));
-  border-color: rgba(255,255,255,.50);
-  box-shadow:
-    0 12px 28px rgba(35,46,64,.08),
-    inset 0 1px 0 rgba(255,255,255,.74),
-    inset 0 -1px 0 rgba(255,255,255,.20);
+  border-color: var(--sub-card-border);
+  box-shadow: var(--sub-card-shadow);
 }
 
 .editing .card-body [data-editable="true"] {
@@ -2414,40 +2492,6 @@ body.sheet-open {
   color: var(--text-secondary);
   font-size: .72rem;
   text-align: center;
-}
-
-.app-tabbar,
-.app-tab-btn.active,
-.thumb,
-.card,
-.glass-card,
-.card-icon,
-.glass-card input,
-.glass-card select,
-.glass-card textarea,
-.glass-card .info-item,
-.glass-card .tip-list li,
-.glass-card .table-wrap,
-.glass-card .tag,
-.glass-card button:not(.primary):not(.progress-btn),
-.traffic-sync-card,
-.overview-map,
-.map-open-link,
-.overview-day-legend-item,
-.route-map,
-.route-node,
-.route-traveler,
-.day-event,
-.forecast-card,
-.day-card,
-.day-editor-sheet,
-#introContent > p,
-#introContent > .tag-group,
-#budgetContent > p,
-#budgetContent > .table-wrap,
-#tipsContent > .tip-list,
-#tipsContent > .tip-list li {
-  box-shadow: none !important;
 }
 
 .map-route,
@@ -2654,9 +2698,12 @@ body.sheet-open {
   color: var(--text-secondary);
   font-size: .82rem;
   text-align: center;
-  background: color-mix(in srgb, var(--surface) 72%, transparent);
-  border: 1px dashed var(--border);
+  background: var(--sub-card-bg);
+  border: 1px dashed var(--sub-card-border);
   border-radius: var(--radius-box);
+  box-shadow: var(--sub-card-shadow);
+  backdrop-filter: var(--sub-card-blur);
+  -webkit-backdrop-filter: var(--sub-card-blur);
 }
 .history-empty[hidden] {
   display: none;
@@ -2664,13 +2711,15 @@ body.sheet-open {
 .history-card {
   position: relative;
   width: 100%;
-  background: var(--surface);
-  border: 1px solid var(--border);
+  background: var(--sub-card-bg);
+  border: 1px solid var(--sub-card-border);
   border-radius: var(--radius-box);
-  box-shadow: var(--shadow);
+  box-shadow: var(--sub-card-shadow);
   overflow: hidden;
   user-select: none;
   -webkit-tap-highlight-color: transparent;
+  backdrop-filter: var(--sub-card-blur);
+  -webkit-backdrop-filter: var(--sub-card-blur);
 }
 .history-card-title {
   margin-bottom: 6px;
@@ -2732,7 +2781,6 @@ body.sheet-open {
   justify-content: center;
   border: 0;
   border-radius: 0;
-  color: #000;
   font-size: .76rem;
   font-weight: 700;
   cursor: pointer;
@@ -2742,12 +2790,14 @@ body.sheet-open {
 }
 .history-action-btn.apply-btn {
   right: 0;
-  background: #22c55e;
+  background: var(--history-apply-bg);
+  color: var(--history-apply-text);
   border-radius: 0 var(--radius-box) var(--radius-box) 0;
 }
 .history-action-btn.delete-btn {
   left: 0;
-  background: #ef4444;
+  background: var(--history-delete-bg);
+  color: var(--history-delete-text);
   border-radius: var(--radius-box) 0 0 var(--radius-box);
 }
 .history-card.show-apply .history-action-btn.apply-btn,
@@ -2769,11 +2819,13 @@ body.sheet-open {
   padding: 0 !important;
 }
 .glass-card button.history-action-btn.apply-btn {
-  background: #22c55e !important;
+  background: var(--history-apply-bg) !important;
+  color: var(--history-apply-text) !important;
   border-radius: 0 var(--radius-box) var(--radius-box) 0 !important;
 }
 .glass-card button.history-action-btn.delete-btn {
-  background: #ef4444 !important;
+  background: var(--history-delete-bg) !important;
+  color: var(--history-delete-text) !important;
   border-radius: var(--radius-box) 0 0 var(--radius-box) !important;
 }
 
@@ -2840,18 +2892,28 @@ body.sheet-open {
 }
 
 /* ---- Global card transparency for custom background ----
-   Strategy: outer card containers use --card-alpha; everything nested
-   inside already-transparent cards gets fully transparent background
-   to avoid opacity stacking (e.g. card 70% × inner 70% = 49%). ---- */
+   Outer cards use the user alpha; inner cards keep a stronger glass layer
+   so photos show through without sacrificing text readability. ---- */
 
 /* Outer card containers — the single transparency layer */
 body.custom-bg .card,
 body.custom-bg .glass-card,
 body.custom-bg .app-created-card,
-body.custom-bg .day-card,
 body.custom-bg .day-app-card {
   background-color: color-mix(in srgb, var(--surface) var(--card-alpha, 70%), transparent) !important;
   background-image: none !important;
+  box-shadow: var(--card-shadow) !important;
+  backdrop-filter: var(--custom-card-blur, var(--card-blur)) !important;
+  -webkit-backdrop-filter: var(--custom-card-blur, var(--card-blur)) !important;
+}
+
+body.custom-bg.custom-bg-transparent .card,
+body.custom-bg.custom-bg-transparent .glass-card,
+body.custom-bg.custom-bg-transparent .app-created-card,
+body.custom-bg.custom-bg-transparent .day-app-card {
+  background-color: transparent !important;
+  background-image: none !important;
+  box-shadow: none !important;
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
 }
@@ -2864,10 +2926,13 @@ body.custom-bg .glass-card::after {
   box-shadow: none !important;
 }
 
-/* Inner content blocks — transparent so outer card bg shows through */
+/* Inner content blocks stay more solid for readability over custom photos */
+body.custom-bg .day-card,
 body.custom-bg .day-event,
 body.custom-bg .forecast-card,
 body.custom-bg .traffic-sync-card,
+body.custom-bg .history-card,
+body.custom-bg .history-empty,
 body.custom-bg .info-item,
 body.custom-bg .tag,
 body.custom-bg #introContent > p,
@@ -2875,9 +2940,24 @@ body.custom-bg #introContent > .tag-group,
 body.custom-bg #budgetContent > p,
 body.custom-bg #budgetContent > .table-wrap,
 body.custom-bg #tipsContent > .tip-list {
-  background: transparent !important;
-  background-color: transparent !important;
+  background-color: var(--sub-card-bg) !important;
   background-image: none !important;
+  border-color: var(--sub-card-border) !important;
+  box-shadow: var(--sub-card-shadow) !important;
+  backdrop-filter: var(--custom-sub-card-blur, var(--sub-card-blur)) !important;
+  -webkit-backdrop-filter: var(--custom-sub-card-blur, var(--sub-card-blur)) !important;
+}
+
+body.custom-bg .forecast-card.highlight {
+  background-color: var(--weather-day-bg) !important;
+  border-color: color-mix(in srgb, var(--theme-primary) 42%, var(--sub-card-border)) !important;
+}
+
+body.custom-bg .day-app-card .day-card {
+  background: transparent !important;
+  background-image: none !important;
+  border: 0 !important;
+  box-shadow: none !important;
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
 }
@@ -2886,9 +2966,13 @@ body.custom-bg #tipsContent > .tip-list {
 body.custom-bg .glass-card input,
 body.custom-bg .glass-card select,
 body.custom-bg .glass-card textarea,
-body.custom-bg .glass-card button:not(.primary):not(.progress-btn) {
-  background-color: color-mix(in srgb, var(--surface) 92%, transparent) !important;
+body.custom-bg .glass-card button:not(.primary):not(.progress-btn):not(.history-action-btn) {
+  background-color: var(--sub-card-bg) !important;
   background-image: none !important;
+  border-color: var(--sub-card-border) !important;
+  box-shadow: var(--sub-card-shadow) !important;
+  backdrop-filter: var(--custom-sub-card-blur, var(--sub-card-blur)) !important;
+  -webkit-backdrop-filter: var(--custom-sub-card-blur, var(--sub-card-blur)) !important;
 }
 
 /* Normalize border-radius for tips/traffic content blocks */
@@ -2898,6 +2982,8 @@ body.custom-bg #introContent > .tag-group,
 body.custom-bg #budgetContent > p,
 body.custom-bg #budgetContent > .table-wrap,
 body.custom-bg .traffic-sync-card,
+body.custom-bg .day-card,
+body.custom-bg .day-event,
 body.custom-bg .forecast-card {
   border-radius: var(--radius-box) !important;
 }
@@ -2926,14 +3012,74 @@ body.custom-bg .forecast-card {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 10px;
+  gap: 12px;
   margin: 8px 0;
   font-size: .82rem;
   color: var(--text);
 }
-.bg-toggle-row input[type="range"] {
-  width: 100px;
-}
 .bg-blur-label {
   flex: 1;
+}
+
+.glass-card input[type="range"],
+.bg-toggle-row input[type="range"] {
+  flex: 0 1 160px;
+  width: min(42vw, 160px);
+  min-width: 108px;
+  min-height: 28px;
+  padding: 0;
+  appearance: none;
+  -webkit-appearance: none;
+  background: transparent !important;
+  background-image: none !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  accent-color: var(--accent);
+}
+
+.glass-card input[type="range"]::-webkit-slider-runnable-track,
+.bg-toggle-row input[type="range"]::-webkit-slider-runnable-track {
+  height: 8px;
+  background: color-mix(in srgb, var(--accent) 24%, var(--sub-card-bg));
+  border: 1px solid color-mix(in srgb, var(--accent) 20%, var(--sub-card-border));
+  border-radius: 999px;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.42);
+}
+
+.glass-card input[type="range"]::-webkit-slider-thumb,
+.bg-toggle-row input[type="range"]::-webkit-slider-thumb {
+  width: 20px;
+  height: 20px;
+  margin-top: -7px;
+  appearance: none;
+  -webkit-appearance: none;
+  background: var(--accent);
+  border: 3px solid color-mix(in srgb, var(--surface) 88%, white);
+  border-radius: 999px;
+  box-shadow: 0 4px 10px rgba(35,46,64,.18);
+}
+
+.glass-card input[type="range"]::-moz-range-track,
+.bg-toggle-row input[type="range"]::-moz-range-track {
+  height: 8px;
+  background: color-mix(in srgb, var(--accent) 24%, var(--sub-card-bg));
+  border: 1px solid color-mix(in srgb, var(--accent) 20%, var(--sub-card-border));
+  border-radius: 999px;
+}
+
+.glass-card input[type="range"]::-moz-range-thumb,
+.bg-toggle-row input[type="range"]::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  background: var(--accent);
+  border: 3px solid color-mix(in srgb, var(--surface) 88%, white);
+  border-radius: 999px;
+  box-shadow: 0 4px 10px rgba(35,46,64,.18);
+}
+
+#bgAlphaValue {
+  flex: 0 0 3.4em;
+  text-align: right;
 }
