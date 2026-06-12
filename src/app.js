@@ -2231,8 +2231,18 @@
   }
 
   function renderRouteNodes(items) {
-    const positions = [[8,66], [34,23], [64,74], [88,34], [50,48]];
-    const visible = items.length ? items.slice(0, 5) : [{ time: '' }];
+    const positions = [[8,66], [34,23], [50,48], [64,74], [88,34]];
+    const timeValue = (item, index) => {
+      const match = String(item?.time || '').match(/(\d{1,2})(?::?(\d{2}))?/);
+      return match ? Number(match[1]) * 60 + Number(match[2] || 0) : 10000 + index;
+    };
+    const visible = items.length
+      ? items
+          .map((item, index) => ({ item, index }))
+          .sort((a, b) => timeValue(a.item, a.index) - timeValue(b.item, b.index))
+          .slice(0, 5)
+          .map(entry => entry.item)
+      : [{ time: '' }];
     return visible.map((item, index) => {
       const pos = positions[index] || positions[positions.length - 1];
       return `<div class="route-node" style="left:${pos[0]}%;top:${pos[1]}%;">${escapeHtml(item.time ? String(item.time).slice(0, 2) : String(index + 1))}</div>`;
@@ -3168,6 +3178,8 @@
   function handleHistoryAction(event) {
     const btn = event.target.closest('[data-action]');
     if (!btn) return;
+    event.preventDefault();
+    event.stopPropagation();
     const action = btn.dataset.action;
     const id = btn.dataset.id;
     if (action === 'apply') {
@@ -3200,6 +3212,10 @@
     }
 
     scroll.addEventListener('pointerdown', e => {
+      if (e.target.closest('.history-action-btn')) {
+        e.stopPropagation();
+        return;
+      }
       const card = e.target.closest('.history-card');
       if (!card) { resetCard(); return; }
       if (currentCard && currentCard !== card) resetCard();
@@ -3247,6 +3263,7 @@
 
     document.addEventListener('pointerdown', e => {
       if (!currentCard) return;
+      if (e.target.closest('.history-action-btn')) return;
       if (!scroll.contains(e.target)) resetCard();
     });
   }
