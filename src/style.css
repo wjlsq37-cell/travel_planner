@@ -1474,30 +1474,68 @@ button:disabled {
 .table-wrap {
   overflow-x: auto;
   margin: 10px 0;
+  border: 1px solid var(--sub-card-border);
+  border-radius: var(--radius-box);
+  background-color: var(--sub-card-bg);
+  box-shadow: var(--sub-card-shadow);
+  backdrop-filter: var(--sub-card-blur);
+  -webkit-backdrop-filter: var(--sub-card-blur);
 }
 
 table {
   width: 100%;
-  border-collapse: collapse;
+  min-width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  overflow: hidden;
+  border-radius: inherit;
   font-size: .85rem;
+  color: var(--text);
 }
 
 thead th {
   padding: 10px 12px;
-  background: var(--tag-bg);
-  border-bottom: 2px solid var(--border);
-  color: var(--text-secondary);
-  font-weight: 600;
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--theme-primary) 18%, rgba(255,255,255,.46)), rgba(255,255,255,.10)),
+    color-mix(in srgb, var(--theme-primary) 12%, var(--sub-card-bg));
+  border-bottom: 1px solid color-mix(in srgb, var(--theme-primary) 26%, var(--sub-card-border));
+  color: var(--text);
+  font-weight: 700;
   text-align: left;
+  vertical-align: middle;
 }
 
 tbody td {
   padding: 10px 12px;
-  border-bottom: 1px solid var(--border);
+  background: color-mix(in srgb, var(--sub-card-bg) 78%, transparent);
+  border-bottom: 1px solid color-mix(in srgb, var(--sub-card-border) 70%, transparent);
+  color: var(--text);
   vertical-align: top;
+  line-height: 1.5;
 }
 
 tbody tr:last-child td { border-bottom: none; }
+
+thead th:first-child { border-top-left-radius: calc(var(--radius-box) - 1px); }
+thead th:last-child { border-top-right-radius: calc(var(--radius-box) - 1px); }
+tbody tr:last-child td:first-child { border-bottom-left-radius: calc(var(--radius-box) - 1px); }
+tbody tr:last-child td:last-child { border-bottom-right-radius: calc(var(--radius-box) - 1px); }
+
+#trafficContent .table-wrap table {
+  min-width: 100%;
+  table-layout: fixed;
+}
+
+#trafficContent .table-wrap th:first-child,
+#trafficContent .table-wrap td:first-child {
+  width: 22%;
+}
+
+#trafficContent .table-wrap th,
+#trafficContent .table-wrap td {
+  word-break: normal;
+  overflow-wrap: anywhere;
+}
 
 .timeline {
   position: relative;
@@ -2536,6 +2574,12 @@ body.sheet-open {
 }
 
 @media (max-width: 640px) {
+  .app-page-scroll > .card {
+    width: calc(100% + 10px);
+    margin-right: -5px;
+    margin-left: -5px;
+  }
+
   #app-panel-plan .mini-swiper-slide:has(.day-app-card) .app-page-scroll {
     transform: none;
     transition: none;
@@ -2976,6 +3020,7 @@ body.custom-bg .history-card,
 body.custom-bg .history-empty,
 body.custom-bg .info-item,
 body.custom-bg .tag,
+body.custom-bg .glass-card .table-wrap,
 body.custom-bg #introContent > p,
 body.custom-bg #introContent > .tag-group,
 body.custom-bg #budgetContent > p,
@@ -3021,6 +3066,7 @@ body.custom-bg #tipsContent > .tip-list,
 body.custom-bg #introContent > p,
 body.custom-bg #introContent > .tag-group,
 body.custom-bg #budgetContent > p,
+body.custom-bg .glass-card .table-wrap,
 body.custom-bg #budgetContent > .table-wrap,
 body.custom-bg .traffic-sync-card,
 body.custom-bg .day-card,

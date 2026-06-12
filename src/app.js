@@ -1855,6 +1855,10 @@
     };
   }
 
+  function compactTrafficTime(value) {
+    return String(value || '').replace(/\b(\d{4})-(\d{1,2})-(\d{1,2})\b/g, (_, year, month, day) => `${Number(month)}/${Number(day)}`);
+  }
+
   function renderTraffic(plan) {
     const t = plan.traffic || {};
     const sync = trafficAlignment(plan);
@@ -1862,14 +1866,12 @@
       <div class="section-subtitle">候选交通</div>
       <div class="table-wrap">
         <table>
-          <thead><tr><th>类型/班次</th><th>出发</th><th>到达</th><th>耗时</th><th>说明</th></tr></thead>
+          <thead><tr><th>类型/班次</th><th>出发</th><th>到达</th></tr></thead>
           <tbody>${t.options.map(item => `
             <tr>
               <td>${escapeHtml(item.type || item.name || '')}</td>
-              <td>${escapeHtml(item.depart || '')}</td>
-              <td>${escapeHtml(item.arrive || '')}</td>
-              <td>${escapeHtml(item.duration || '')}</td>
-              <td>${escapeHtml(item.note || '')}</td>
+              <td>${escapeHtml(compactTrafficTime(item.depart))}</td>
+              <td>${escapeHtml(compactTrafficTime(item.arrive))}</td>
             </tr>
           `).join('')}</tbody>
         </table>
