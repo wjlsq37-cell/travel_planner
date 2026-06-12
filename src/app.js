@@ -460,6 +460,14 @@
     return formatDate(d);
   }
 
+  function weatherDisplayDates(state) {
+    const startDate = state.startDate || todayText();
+    const dayCount = Math.max(1, Number(state.days) || 1);
+    const includePreviousDay = daysBetween(todayText(), startDate) > 0;
+    const beforeDays = includePreviousDay ? 1 : 0;
+    return Array.from({ length: dayCount + beforeDays + 1 }, (_, i) => addDays(startDate, i - beforeDays));
+  }
+
   function displayDate(dateText) {
     const d = new Date(dateText + 'T00:00:00');
     return `${d.getMonth() + 1}月${d.getDate()}日 ${WEEKDAY[d.getDay()]}`;
@@ -2550,19 +2558,24 @@
     }
     const daily = weather.daily || {};
     const dates = daily.time || [];
-    const tripDates = new Set(Array.from({ length: state.days }, (_, i) => addDays(state.startDate, i)));
+    const startDate = state.startDate || todayText();
+    const tripDayCount = Math.max(1, Number(state.days) || 1);
+    const tripDates = new Set(Array.from({ length: tripDayCount }, (_, i) => addDays(startDate, i)));
+    const visibleDates = weatherDisplayDates(state)
+      .map(date => ({ date, i: dates.indexOf(date) }));
     let maxRain = 0;
     let maxWind = 0;
-    const html = dates.map((date, i) => {
+    const html = visibleDates.map(({ date, i }) => {
       const d = new Date(date + 'T00:00:00');
-      const code = daily.weather_code?.[i];
-      const w = WMO_MAP[code] || { desc: '天气变化', icon: '❔' };
-      const high = Math.round(daily.temperature_2m_max?.[i] ?? 0);
-      const low = Math.round(daily.temperature_2m_min?.[i] ?? 0);
-      const rainProb = daily.precipitation_probability_max?.[i] ?? 0;
-      const rain = daily.precipitation_sum?.[i] ?? 0;
-      const wind = daily.wind_speed_10m_max?.[i] ?? 0;
-      if (tripDates.has(date)) {
+      const hasData = i >= 0;
+      const code = hasData ? daily.weather_code?.[i] : undefined;
+      const w = hasData ? (WMO_MAP[code] || { desc: '天气变化', icon: '❔' }) : { desc: '暂无预报', icon: '--' };
+      const high = hasData ? Math.round(daily.temperature_2m_max?.[i] ?? 0) : null;
+      const low = hasData ? Math.round(daily.temperature_2m_min?.[i] ?? 0) : null;
+      const rainProb = hasData ? (daily.precipitation_probability_max?.[i] ?? 0) : 0;
+      const rain = hasData ? (daily.precipitation_sum?.[i] ?? 0) : 0;
+      const wind = hasData ? (daily.wind_speed_10m_max?.[i] ?? 0) : 0;
+      if (hasData && tripDates.has(date)) {
         maxRain = Math.max(maxRain, rainProb);
         maxWind = Math.max(maxWind, wind);
       }
@@ -2570,8 +2583,8 @@
         <div class="forecast-card${tripDates.has(date) ? ' highlight' : ''}">
           <div class="forecast-date"><div class="day">${d.getMonth() + 1}/${d.getDate()}</div><div class="weekday">${WEEKDAY[d.getDay()]}</div></div>
           <div class="forecast-icon">${w.icon}</div>
-          <div class="forecast-info"><div class="forecast-desc">${w.desc}</div><div class="forecast-temp"><span class="high">${high}°</span> / <span class="low">${low}°</span></div></div>
-          <div class="forecast-extras">降水 ${Math.round(rainProb)}%<br>${Number(rain).toFixed(1)}mm · ${windDesc(wind)}</div>
+          <div class="forecast-info"><div class="forecast-desc">${w.desc}</div><div class="forecast-temp">${hasData ? `<span class="high">${high}°</span> / <span class="low">${low}°</span>` : '暂无实时数据'}</div></div>
+          <div class="forecast-extras">${hasData ? `降水 ${Math.round(rainProb)}%<br>${Number(rain).toFixed(1)}mm · ${windDesc(wind)}` : '临近出发<br>再确认'}</div>
         </div>
       `;
     }).join('');
